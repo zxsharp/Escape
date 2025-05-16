@@ -1,0 +1,105 @@
+.maze-map-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 10px;
+  background-color: #f0f0f0;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.maze-map-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.maze-map-container p {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.canvas-container {
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  margin-bottom: 15px;
+  width: 90vw;
+  height: 80vh;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.maze-map-canvas {
+  max-height: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.map-legend {
+  display: flex;
+  gap: 15px;
+  margin: 5px 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.start-color {
+  background-color: #4040FF;
+}
+
+.exit-color {
+  background-color: #FF4040;
+}
+
+.start-game-btn-container {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.start-game-btn {
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.start-game-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.start-game-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .canvas-container {
+    padding: 10px;
+    height: 70vh;
+  }
+}
