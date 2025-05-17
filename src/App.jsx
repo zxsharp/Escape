@@ -7,6 +7,11 @@ import * as THREE from 'three';
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 
+// Import audio files directly
+import playerMovingSound from './assets/player-moving.mp3';
+import gameStartSound from './assets/game-start.mp3';
+import gameWonSound from './assets/game-won.mp3';
+
 function App() {
   // App state: 'difficulty', 'preview', or 'game'
   const [appState, setAppState] = useState('difficulty');
@@ -20,6 +25,11 @@ function App() {
   const clockRef = useRef(new THREE.Clock());
   const animationFrameRef = useRef(null);
   
+  // Audio references
+  const playerMovingAudioRef = useRef(null);
+  const gameStartAudioRef = useRef(null);
+  const gameWonAudioRef = useRef(null);
+  
   // Handler for difficulty selection
   const handleDifficultySelect = (selectedDifficulty) => {
     setDifficulty(selectedDifficulty);
@@ -29,6 +39,11 @@ function App() {
   // Handler for starting the game
   const handleStartGame = () => {
     setAppState('game');
+    // Play game start sound
+    if (gameStartAudioRef.current) {
+      gameStartAudioRef.current.currentTime = 0;
+      gameStartAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
   };
   
   // Generate maze config based on difficulty
@@ -74,6 +89,17 @@ function App() {
   // Handle winning the game
   const handleWin = () => {
     setShowWinPopup(true);
+    
+    // Play winning sound
+    if (gameWonAudioRef.current) {
+      gameWonAudioRef.current.currentTime = 0;
+      gameWonAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    // Stop movement sound if it's playing
+    if (playerMovingAudioRef.current) {
+      playerMovingAudioRef.current.pause();
+    }
   };
   
   // Create a custom win condition checker
@@ -170,6 +196,13 @@ function App() {
     if (playerRef.current) {
       playerRef.current.keyStates[keyCode] = true;
       setActiveKeys(prev => ({ ...prev, [keyCode]: true }));
+      
+      // Play movement sound for Up/Down
+      if ((keyCode === 'ArrowUp' || keyCode === 'ArrowDown') && 
+          playerMovingAudioRef.current && 
+          playerMovingAudioRef.current.paused) {
+        playerMovingAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+      }
     }
   };
   
@@ -177,9 +210,17 @@ function App() {
     if (playerRef.current) {
       playerRef.current.keyStates[keyCode] = false;
       setActiveKeys(prev => ({ ...prev, [keyCode]: false }));
+      
+      // Stop movement sound if both Up/Down are released
+      if ((keyCode === 'ArrowUp' || keyCode === 'ArrowDown') && 
+          playerRef.current.keyStates['ArrowUp'] === false && 
+          playerRef.current.keyStates['ArrowDown'] === false && 
+          playerMovingAudioRef.current) {
+        playerMovingAudioRef.current.pause();
+      }
     }
   };
-
+  
   // Handler for retrying the game - replace with reset position functionality
   const handleRetry = () => {
     // Hide win popup
@@ -199,6 +240,12 @@ function App() {
       
       // Reset win status
       playerRef.current.hasWon = false;
+      
+      // Play game start sound
+      if (gameStartAudioRef.current) {
+        gameStartAudioRef.current.currentTime = 0;
+        gameStartAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+      }
     }
   };
   
@@ -219,7 +266,50 @@ function App() {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
+    
+    // Stop any audio playing
+    if (playerMovingAudioRef.current) {
+      playerMovingAudioRef.current.pause();
+      playerMovingAudioRef.current.currentTime = 0;
+    }
   };
+  
+  // Check for movement to play sound
+  useEffect(() => {
+    if (appState === 'game' && playerRef.current) {
+      const isMoving = playerRef.current.keyStates['ArrowUp'] || playerRef.current.keyStates['ArrowDown'];
+      
+      if (isMoving && playerMovingAudioRef.current && playerMovingAudioRef.current.paused) {
+        playerMovingAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+      } else if (!isMoving && playerMovingAudioRef.current && !playerMovingAudioRef.current.paused) {
+        playerMovingAudioRef.current.pause();
+      }
+    }
+  }, [activeKeys, appState]);
+  
+  // Create audio elements on first render
+  useEffect(() => {
+    // Player movement sound (looping)
+    playerMovingAudioRef.current = new Audio(playerMovingSound);
+    playerMovingAudioRef.current.loop = true;
+    playerMovingAudioRef.current.volume = 0.4;
+    
+    // Game start sound (once)
+    gameStartAudioRef.current = new Audio(gameStartSound);
+    gameStartAudioRef.current.volume = 0.6;
+    
+    // Game won sound (once)
+    gameWonAudioRef.current = new Audio(gameWonSound);
+    gameWonAudioRef.current.volume = 0.6;
+    
+    // Cleanup
+    return () => {
+      if (playerMovingAudioRef.current) {
+        playerMovingAudioRef.current.pause();
+        playerMovingAudioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
   
   // Render the appropriate view based on app state
   return (

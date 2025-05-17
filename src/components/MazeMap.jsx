@@ -55,7 +55,7 @@ const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
     canvas.height = canvasSize.height;
     
     // Clear canvas
-    ctx.fillStyle = '#f5f5f5';
+    ctx.fillStyle = '#a9d9aa';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Calculate walls in a 2D grid format from the 3D wall coordinates
@@ -185,7 +185,7 @@ const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
     <div className="maze-map-container">
       <div className="maze-header">
         <h2>Maze Preview</h2>
-        <p>Remember your way from the blue start point to the red exit!</p>
+        <h3>Remember your way from the blue start point to the red exit!</h3>
         
         {/* Back button */}
         <button 
@@ -214,6 +214,11 @@ const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
           {mazeConfig ? 'Start Game' : 'Generating Maze...'}
         </button>
       </div>
+      
+      {/* Credit tag */}
+      <a href="https://github.com/zxsharp" target="_blank" rel="noopener noreferrer" className="credit-tag">
+        Made By - zxsharp
+      </a>
     </div>
   );
 };

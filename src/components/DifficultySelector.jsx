@@ -1,4 +1,5 @@
 import React from 'react';
+import GitHubLogo from './GitHubLogo';
 import './DifficultySelector.css';
 
 const DifficultySelector = ({ onDifficultySelect }) => {
@@ -12,7 +13,7 @@ const DifficultySelector = ({ onDifficultySelect }) => {
 
   return (
     <div className="difficulty-container">
-      <h1>Escape The Maze</h1>
+      <GitHubLogo />
       <h2>Select Difficulty</h2>
       
       <div className="difficulty-grid">
@@ -34,6 +35,11 @@ const DifficultySelector = ({ onDifficultySelect }) => {
       <p className="game-description">
         Find your way through the randomly generated maze from the blue start point to the red exit!
       </p>
+      
+      {/* Credit tag */}
+      <a href="https://github.com/zxsharp" target="_blank" rel="noopener noreferrer" className="credit-tag">
+        Made By - zxsharp
+      </a>
     </div>
   );
 };

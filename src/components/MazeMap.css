@@ -2,34 +2,38 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 10px;
-  background-color: #f0f0f0;
+  justify-content: flex-start;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 2vh 10px;
+  background-color: #0D1117; /* GitHub dark background */
+  color: #C9D1D9; /* GitHub text color */
   overflow: auto;
   box-sizing: border-box;
 }
 
 .maze-map-container h2 {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  color: #333;
+  font-size: min(2rem, 6vw);
+  margin: 0 0 1vh;
+  color: #58A6FF; /* GitHub blue */
 }
 
 .maze-map-container p {
-  margin: 10px 0;
-  font-size: 1rem;
-  color: #333;
+  margin: 0 0 1vh;
+  font-size: min(1rem, 4vw);
+  color: #8B949E; /* GitHub secondary text */
+  text-align: center;
 }
 
 .canvas-container {
-  background: white;
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #161B22; /* GitHub darker container */
+  border: 1px solid #30363D; /* GitHub border */
+  border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 1vh;
   width: auto;
-  height: 80vh;
+  height: 70vh;
   overflow: auto;
   display: flex;
   justify-content: center;
@@ -42,53 +46,27 @@
   display: block;
 }
 
-.map-legend {
-  display: flex;
-  gap: 15px;
-  margin: 5px 0;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.legend-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-.start-color {
-  background-color: #4040FF;
-}
-
-.exit-color {
-  background-color: #FF4040;
-}
-
 .start-game-btn-container {
-  margin-top: 10px;
+  margin-top: 1vh;
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .start-game-btn {
-  padding: 12px 30px;
-  font-size: 1.2rem;
-  background-color: #4CAF50;
+  padding: 10px 25px;
+  font-size: min(1.2rem, 5vw);
+  background-color: #238636; /* GitHub green button */
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .start-game-btn:hover {
-  background-color: #45a049;
+  background-color: #2EA043; /* GitHub green button hover */
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
@@ -98,51 +76,9 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.difficulty-selector {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.difficulty-selector h2 {
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.difficulty-options {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.difficulty-btn {
-  padding: 8px 16px;
-  font-size: 1rem;
-  background-color: #e0e0e0;
-  color: #333;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.difficulty-btn:hover {
-  background-color: #d0d0d0;
-  transform: translateY(-2px);
-}
-
-.difficulty-btn.selected {
-  background-color: #4CAF50;
-  color: white;
-  border-color: #45a049;
-  transform: scale(1.05);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-}
-
 .loading-message {
-  font-size: 1.2rem;
-  color: #666;
+  font-size: min(1.2rem, 5vw);
+  color: #8B949E;
   padding: 2rem;
   text-align: center;
 }
@@ -153,19 +89,20 @@
   align-items: center;
   position: relative;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 1vh;
+  padding-top: 1vh;
 }
 
 .back-to-difficulty {
   position: absolute;
   left: 20px;
-  top: 0;
-  padding: 8px 16px;
-  font-size: 1rem;
-  background-color: #2196F3;
+  top: 5px;
+  padding: 8px 12px;
+  font-size: min(1rem, 4vw);
+  background-color: #1F6FEB; /* GitHub blue button */
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -174,7 +111,7 @@
 }
 
 .back-to-difficulty:hover {
-  background-color: #1976D2;
+  background-color: #388BFD; /* GitHub blue button hover */
   transform: translateY(-2px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
@@ -184,20 +121,40 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.credit-tag {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: min(0.8rem, 3vw);
+  color: #8B949E; /* GitHub secondary text */
+  text-decoration: none;
+  padding: 5px 8px;
+  background-color: #161B22; /* GitHub darker container */
+  border: 1px solid #30363D; /* GitHub border */
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.credit-tag:hover {
+  background-color: #1F2937;
+  color: #58A6FF; /* GitHub blue */
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-color: #58A6FF; /* GitHub blue */
+}
+
 @media (max-width: 768px) {
-  .canvas-container {
-    padding: 10px;
-    height: 70vh;
-  }
-  
   .maze-header {
-    margin-top: 50px;  /* Add space for the back button */
+    margin-top: 40px;  /* Add space for the back button */
   }
   
   .back-to-difficulty {
-    top: -40px;
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
+    padding: 5px 10px;
+    font-size: 0.9rem;
   }
   
   .back-to-difficulty:hover {
@@ -207,15 +164,24 @@
   .back-to-difficulty:active {
     transform: translateX(-50%) translateY(0);
   }
+  
+  .canvas-container {
+    height: 60vh;
+  }
 }
 
-@media (max-width: 500px) {
-  .difficulty-options {
-    flex-direction: column;
-    gap: 5px;
+@media (max-height: 600px) {
+  .canvas-container {
+    height: 55vh;
   }
   
-  .difficulty-btn {
-    width: 100%;
+  .maze-map-container h2 {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+  
+  .maze-map-container p {
+    font-size: 0.9rem;
+    margin: 0 0 5px;
   }
 }

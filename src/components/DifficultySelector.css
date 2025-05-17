@@ -2,31 +2,49 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 20px;
-  background-color: #f0f0f0;
-  color: #333;
+  justify-content: flex-start;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 2vh 20px;
+  background-color: #0D1117; /* GitHub dark background */
+  color: #C9D1D9; /* GitHub text color */
   text-align: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.github-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2vh;
+}
+
+.logo-text {
+  margin-top: 0.5vh;
+  font-size: min(2.5rem, 6vw);
+  font-weight: bold;
+  color: #58A6FF; /* GitHub blue */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .difficulty-container h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
-  color: #333;
+  color: #58A6FF; /* GitHub blue */
 }
 
 .difficulty-container h2 {
-  font-size: 1.8rem;
-  margin-bottom: 30px;
-  color: #555;
+  font-size: min(1.8rem, 5vw);
+  margin: 1vh 0 2vh;
+  color: #8B949E; /* GitHub secondary text */
 }
 
 .difficulty-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 2vh 20px;
+  margin-bottom: 2vh;
   max-width: 600px;
   width: 90%;
 }
@@ -35,67 +53,93 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: min(20px, 3vh);
+  background-color: #161B22; /* GitHub darker container */
+  border: 1px solid #30363D; /* GitHub border color */
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   cursor: pointer;
-  border: none;
   text-align: center;
 }
 
 .difficulty-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  border-color: #58A6FF; /* GitHub blue on hover */
 }
 
 .difficulty-label {
-  font-size: 1.5rem;
+  font-size: min(1.5rem, 4vw);
   font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
+  margin-bottom: 1vh;
+  color: #C9D1D9; /* GitHub text color */
 }
 
 .difficulty-description {
   display: flex;
   flex-direction: column;
-  font-size: 1rem;
-  color: #666;
+  font-size: min(1rem, 3.5vw);
+  color: #8B949E; /* GitHub secondary text */
 }
 
 .maze-size {
   font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
+  font-size: min(1.2rem, 3.5vw);
+  margin-bottom: 0.5vh;
 }
 
 .maze-cells {
-  font-size: 0.9rem;
+  font-size: min(0.9rem, 3vw);
 }
 
 .game-description {
   max-width: 600px;
   line-height: 1.6;
-  margin-top: 20px;
-  color: #000000;
+  margin: 2vh 0;
+  padding: 0 10px;
+  color: #8B949E; /* GitHub secondary text */
+  font-size: min(1rem, 3.5vw);
 }
 
-/* Color coding for difficulty levels */
+/* Updated color coding for difficulty levels using GitHub color palette */
 .difficulty-card:nth-child(1) {
-  border-top: 5px solid #4CAF50; /* Green for Easy */
+  border-top: 5px solid #3FB950; /* GitHub green */
 }
 
 .difficulty-card:nth-child(2) {
-  border-top: 5px solid #2196F3; /* Blue for Intermediate */
+  border-top: 5px solid #58A6FF; /* GitHub blue */
 }
 
 .difficulty-card:nth-child(3) {
-  border-top: 5px solid #FF9800; /* Orange for Hard */
+  border-top: 5px solid #F0883E; /* GitHub orange */
 }
 
 .difficulty-card:nth-child(4) {
-  border-top: 5px solid #F44336; /* Red for Extreme */
+  border-top: 5px solid #F85149; /* GitHub red */
+}
+
+.credit-tag {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: min(0.8rem, 3vw);
+  color: #8B949E; /* GitHub secondary text */
+  text-decoration: none;
+  padding: 5px 8px;
+  background-color: #161B22; /* GitHub darker container */
+  border: 1px solid #30363D; /* GitHub border */
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.credit-tag:hover {
+  background-color: #1F2937;
+  color: #58A6FF; /* GitHub blue */
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-color: #58A6FF; /* GitHub blue */
 }
 
 @media (max-width: 600px) {
@@ -103,11 +147,28 @@
     grid-template-columns: 1fr;
   }
   
-  .difficulty-container h1 {
-    font-size: 2rem;
+  .difficulty-container {
+    padding-top: 2vh;
+    justify-content: flex-start;
   }
   
-  .difficulty-container h2 {
-    font-size: 1.5rem;
+  .github-logo svg {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-height: 700px) {
+  .github-logo svg {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .logo-text {
+    font-size: min(2rem, 6vw);
+  }
+  
+  .difficulty-card {
+    padding: 10px;
   }
 }
