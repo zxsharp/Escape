@@ -4,6 +4,8 @@ import { SceneManager } from '../scene/SceneManager.js';
 import * as THREE from 'three';
 import VirtualControls from './VirtualControls.jsx';
 import WinPopup from './WinPopup.jsx';
+import MiniMap from './MiniMap.jsx';
+import ConfirmationPopup from './ConfirmationPopup.jsx';
 
 const Game = ({ 
   mazeConfig, 
@@ -17,6 +19,12 @@ const Game = ({
   const clockRef = useRef(new THREE.Clock());
   const animationFrameRef = useRef(null);
   const [showWinPopup, setShowWinPopup] = useState(false);
+  const [showMiniMap, setShowMiniMap] = useState(false);
+  const [showMapConfirmation, setShowMapConfirmation] = useState(false);
+  const [playerState, setPlayerState] = useState({
+    position: null,
+    rotation: 0
+  });
   
   // Track active keys for button highlighting
   const [activeKeys, setActiveKeys] = useState({
@@ -152,6 +160,28 @@ const Game = ({
     }
   }, [activeKeys, audioRefs.playerMovingAudio]);
   
+  // Animation function to capture player position for minimap
+  const animate = () => {
+    animationFrameRef.current = requestAnimationFrame(animate);
+    const delta = clockRef.current.getDelta();
+    
+    const player = playerRef.current;
+    if (player) {
+      player.update(mazeConfig.walls, delta);
+      
+      // Update player state for MiniMap - this ensures the map shows current position
+      setPlayerState({
+        position: { ...player.position },
+        rotation: player.rotation
+      });
+      
+      if (sceneManagerRef.current) {
+        sceneManagerRef.current.updateCameraPosition(player.position, player.rotation, delta);
+        sceneManagerRef.current.renderer.render(sceneManagerRef.current.scene, sceneManagerRef.current.camera);
+      }
+    }
+  };
+
   // Initialize 3D game
   useEffect(() => {
     // Initialize scene and player
@@ -224,16 +254,6 @@ const Game = ({
     const handleResize = () => sceneManager.handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Animation function
-    const animate = () => {
-      animationFrameRef.current = requestAnimationFrame(animate);
-      const delta = clockRef.current.getDelta();
-      
-      player.update(mazeConfig.walls, delta);
-      sceneManager.updateCameraPosition(player.position, player.rotation, delta);
-      sceneManager.renderer.render(sceneManager.scene, sceneManager.camera);
-    };
-
     // Start the animation loop
     animate();
 
@@ -248,6 +268,21 @@ const Game = ({
     };
   }, [mazeConfig, audioRefs.playerMovingAudio]);
 
+  // Handler for map button click - show confirmation first
+  const handleMapButtonClick = () => {
+    setShowMapConfirmation(true);
+  };
+  
+  // Handler for confirmation dialog responses
+  const handleConfirmMap = () => {
+    setShowMapConfirmation(false);
+    setShowMiniMap(true);
+  };
+  
+  const handleCancelMap = () => {
+    setShowMapConfirmation(false);
+  };
+  
   return (
     <>
       <canvas ref={canvasRef} id="canvas" />
@@ -269,6 +304,37 @@ const Game = ({
       >
         <div className="start-icon"></div>
       </button>
+      
+      {/* View Map Button - positioned below other buttons */}
+      <button 
+        className="map-button control-btn"
+        onClick={handleMapButtonClick} // show confirmation first
+        aria-label="View maze map"
+      >
+        <div className="map-icon"></div>
+      </button>
+      
+      {/* Map Confirmation Popup */}
+      {showMapConfirmation && (
+        <ConfirmationPopup
+          title="Using the Map"
+          message="Do you want to cheat and use the map?"
+          confirmText="Yes, I'll Cheat"
+          cancelText="No, I won't"
+          onConfirm={handleConfirmMap}
+          onCancel={handleCancelMap}
+        />
+      )}
+      
+      {/* MiniMap Component - shows player's current position */}
+      {showMiniMap && (
+        <MiniMap
+          mazeConfig={mazeConfig}
+          playerPosition={playerState.position}
+          playerRotation={playerState.rotation}
+          onClose={() => setShowMiniMap(false)}
+        />
+      )}
       
       {/* Win Popup */}
       {showWinPopup && (
