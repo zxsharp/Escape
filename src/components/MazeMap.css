@@ -19,6 +19,7 @@
 .maze-map-container p {
   margin: 10px 0;
   font-size: 1rem;
+  color: #333;
 }
 
 .canvas-container {
@@ -27,7 +28,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   padding: 15px;
   margin-bottom: 15px;
-  width: 90vw;
+  width: auto;
   height: 80vh;
   overflow: auto;
   display: flex;
@@ -97,9 +98,69 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.difficulty-selector {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.difficulty-selector h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.difficulty-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.difficulty-btn {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #e0e0e0;
+  color: #333;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.difficulty-btn:hover {
+  background-color: #d0d0d0;
+  transform: translateY(-2px);
+}
+
+.difficulty-btn.selected {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #45a049;
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.loading-message {
+  font-size: 1.2rem;
+  color: #666;
+  padding: 2rem;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .canvas-container {
     padding: 10px;
     height: 70vh;
+  }
+}
+
+@media (max-width: 500px) {
+  .difficulty-options {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .difficulty-btn {
+    width: 100%;
   }
 }

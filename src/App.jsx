@@ -1,19 +1,67 @@
-import { mazeConfig } from './configs/mazeConfig.js';
+import { generateMaze } from './utils/mazeGenerator.js';
 import { Player } from './entities/Player.js';
 import { SceneManager } from './scene/SceneManager.js';
 import MazeMap from './components/MazeMap.jsx';
+import DifficultySelector from './components/DifficultySelector.jsx';
 import * as THREE from 'three';
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 function App() {
-  const [gameStarted, setGameStarted] = useState(false);
+  // App state: 'difficulty', 'preview', or 'game'
+  const [appState, setAppState] = useState('difficulty');
   const [showWinPopup, setShowWinPopup] = useState(false);
+  const [difficulty, setDifficulty] = useState(null);
+  const [currentMazeConfig, setCurrentMazeConfig] = useState(null);
+  
   const canvasRef = useRef(null);
   const sceneManagerRef = useRef(null);
   const playerRef = useRef(null);
   const clockRef = useRef(new THREE.Clock());
   const animationFrameRef = useRef(null);
+  
+  // Handler for difficulty selection
+  const handleDifficultySelect = (selectedDifficulty) => {
+    setDifficulty(selectedDifficulty);
+    setAppState('preview');
+  };
+  
+  // Handler for starting the game
+  const handleStartGame = () => {
+    setAppState('game');
+  };
+  
+  // Generate maze config based on difficulty
+  useEffect(() => {
+    if (!difficulty) return;
+    
+    // Set loading state
+    setCurrentMazeConfig(null);
+    
+    // Generate maze with small delay to allow UI to update
+    setTimeout(() => {
+      const cellSize = 2;
+      const generatedMaze = generateMaze(difficulty.width, difficulty.height, cellSize);
+      
+      setCurrentMazeConfig({
+        // Base maze properties
+        width: difficulty.width,
+        height: difficulty.height, 
+        cellSize: cellSize,
+        wallHeight: 2,
+        wallSize: 0.3,
+        
+        // Colors
+        wallColor: 0xa3a09e,  // gray walls
+        floorColor: 0x407521, // green floor
+        startColor: 0x4040FF, // blue start zone
+        winColor: 0xFF4040,   // red win zone
+        
+        // Include all properties from generated maze
+        ...generatedMaze
+      });
+    }, 10);
+  }, [difficulty]);
   
   // Track active keys for button highlighting
   const [activeKeys, setActiveKeys] = useState({
@@ -43,21 +91,22 @@ function App() {
     return false;
   };
   
+  // Initialize 3D game
   useEffect(() => {
-    // Only initialize the 3D scene after game has started
-    if (!gameStarted) return;
+    // Only initialize the 3D scene when in game state and maze is generated
+    if (appState !== 'game' || !currentMazeConfig) return;
     
     // Initialize scene and player
     const canvas = canvasRef.current;
     const sceneManager = new SceneManager(canvas);
-    const player = new Player(mazeConfig);
+    const player = new Player(currentMazeConfig);
     
     // Modify player to use our React win handler
     const originalCheckWinCondition = player.checkWinCondition;
     player.checkWinCondition = (position) => {
       if (player.hasWon) return false;
       
-      if (checkWin(position, mazeConfig.winZone)) {
+      if (checkWin(position, currentMazeConfig.winZone)) {
         player.hasWon = true;
         handleWin();
         return true;
@@ -70,7 +119,7 @@ function App() {
     playerRef.current = player;
 
     // Create maze
-    sceneManager.createWalls(mazeConfig);
+    sceneManager.createWalls(currentMazeConfig);
 
     // Set up keyboard event tracking for highlighting buttons
     const handleKeyDown = (e) => {
@@ -97,7 +146,7 @@ function App() {
       animationFrameRef.current = requestAnimationFrame(animate);
       const delta = clockRef.current.getDelta();
       
-      player.update(mazeConfig.walls, delta);
+      player.update(currentMazeConfig.walls, delta);
       sceneManager.updateCameraPosition(player.position, player.rotation, delta);
       sceneManager.renderer.render(sceneManager.scene, sceneManager.camera);
     };
@@ -114,7 +163,7 @@ function App() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameStarted]); // Only run effect when gameStarted changes
+  }, [appState, currentMazeConfig]); // Run effect when appState or currentMazeConfig changes
   
   // Handler for virtual button press/release
   const handleVirtualButtonDown = (keyCode) => {
@@ -131,11 +180,6 @@ function App() {
     }
   };
 
-  // Handler for starting the game
-  const handleStartGame = () => {
-    setGameStarted(true);
-  };
-  
   // Handler for retrying the game
   const handleRetry = () => {
     window.location.reload();
@@ -146,11 +190,21 @@ function App() {
     setShowWinPopup(false);
   };
   
+  // Render the appropriate view based on app state
   return (
     <>
-      {!gameStarted ? (
-        <MazeMap mazeConfig={mazeConfig} onStartGame={handleStartGame} />
-      ) : (
+      {appState === 'difficulty' && (
+        <DifficultySelector onDifficultySelect={handleDifficultySelect} />
+      )}
+      
+      {appState === 'preview' && (
+        <MazeMap 
+          mazeConfig={currentMazeConfig} 
+          onStartGame={handleStartGame}
+        />
+      )}
+      
+      {appState === 'game' && (
         <>
           <canvas ref={canvasRef} id="canvas" />
           

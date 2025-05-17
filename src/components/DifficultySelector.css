@@ -1,0 +1,113 @@
+.difficulty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  text-align: center;
+}
+
+.difficulty-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.difficulty-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+  max-width: 600px;
+  width: 90%;
+}
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+}
+
+.difficulty-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.difficulty-label {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.difficulty-description {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #666;
+}
+
+.maze-size {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.maze-cells {
+  font-size: 0.9rem;
+}
+
+.game-description {
+  max-width: 600px;
+  line-height: 1.6;
+  margin-top: 20px;
+  color: #000000;
+}
+
+/* Color coding for difficulty levels */
+.difficulty-card:nth-child(1) {
+  border-top: 5px solid #4CAF50; /* Green for Easy */
+}
+
+.difficulty-card:nth-child(2) {
+  border-top: 5px solid #2196F3; /* Blue for Intermediate */
+}
+
+.difficulty-card:nth-child(3) {
+  border-top: 5px solid #FF9800; /* Orange for Hard */
+}
+
+.difficulty-card:nth-child(4) {
+  border-top: 5px solid #F44336; /* Red for Extreme */
+}
+
+@media (max-width: 600px) {
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .difficulty-container h1 {
+    font-size: 2rem;
+  }
+  
+  .difficulty-container h2 {
+    font-size: 1.5rem;
+  }
+}

@@ -6,21 +6,22 @@ const MazeMap = ({ mazeConfig, onStartGame }) => {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   
   useEffect(() => {
+    // Skip if mazeConfig is not available yet
+    if (!mazeConfig) return;
+    
     const calculateCanvasSize = () => {
       const width = mazeConfig.width;
       const height = mazeConfig.height;
       
       // Calculate the maximum cell size that will fit the screen
-      // Significantly increased to take up more screen real estate
-      const maxWidth = Math.min(window.innerWidth * 0.95, 1200);  // Increased from 0.9 and 800
-      const maxHeight = Math.min(window.innerHeight * 1.2, 1200); // Increased from 1.0 and 1000
+      const maxWidth = Math.min(window.innerWidth * 0.95, 1200);
+      const maxHeight = Math.min(window.innerHeight * 1.2, 1200);
       
       const cellSizeByWidth = Math.floor(maxWidth / width);
       const cellSizeByHeight = Math.floor(maxHeight / height);
       
       // Use the smaller cell size to ensure it fits both dimensions
-      // Increased max size to 100px for much larger cells
-      const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 60); // Increased from 60
+      const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 60);
       
       setCanvasSize({
         width: width * cellSize + 1,
@@ -35,11 +36,14 @@ const MazeMap = ({ mazeConfig, onStartGame }) => {
     return () => {
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [mazeConfig.width, mazeConfig.height]);
+  }, [mazeConfig?.width, mazeConfig?.height]);
   
   useEffect(() => {
+    // Skip if mazeConfig or canvas is not available yet
+    if (!mazeConfig || !canvasSize.cellSize) return;
+    
     const canvas = canvasRef.current;
-    if (!canvas || !canvasSize.cellSize) return;
+    if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
     const width = mazeConfig.width;
@@ -179,13 +183,26 @@ const MazeMap = ({ mazeConfig, onStartGame }) => {
   
   return (
     <div className="maze-map-container">
+      <h2>Maze Preview</h2>
+      <p>Remember your way from the blue start point to the red exit!</p>
       
       <div className="canvas-container">
-        <canvas ref={canvasRef} className="maze-map-canvas"></canvas>
+        {mazeConfig ? (
+          <canvas ref={canvasRef} className="maze-map-canvas"></canvas>
+        ) : (
+          <div className="loading-message">Generating maze...</div>
+        )}
       </div>
       
+      
       <div className="start-game-btn-container">
-        <button className="start-game-btn" onClick={onStartGame}>Start Game</button>
+        <button 
+          className="start-game-btn" 
+          onClick={onStartGame}
+          disabled={!mazeConfig}
+        >
+          {mazeConfig ? 'Start Game' : 'Generating Maze...'}
+        </button>
       </div>
     </div>
   );
