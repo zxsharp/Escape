@@ -78,12 +78,16 @@ function App() {
     }, 10);
   }, [difficulty]);
   
-  // Track active keys for button highlighting
+  // Track active keys for button highlighting - add WASD keys
   const [activeKeys, setActiveKeys] = useState({
     ArrowUp: false,
     ArrowDown: false,
     ArrowLeft: false,
-    ArrowRight: false
+    ArrowRight: false,
+    KeyW: false,
+    KeyS: false,
+    KeyA: false,
+    KeyD: false
   });
   
   // Handle winning the game
@@ -147,16 +151,42 @@ function App() {
     // Create maze
     sceneManager.createWalls(currentMazeConfig);
 
-    // Set up keyboard event tracking for highlighting buttons
+    // Set up keyboard event tracking for highlighting buttons - support both arrows and WASD
     const handleKeyDown = (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
         setActiveKeys(prev => ({ ...prev, [e.code]: true }));
+        
+        // Map WASD to arrow keys for the player
+        if (e.code === 'KeyW') player.keyStates['ArrowUp'] = true;
+        if (e.code === 'KeyS') player.keyStates['ArrowDown'] = true;
+        if (e.code === 'KeyA') player.keyStates['ArrowLeft'] = true;
+        if (e.code === 'KeyD') player.keyStates['ArrowRight'] = true;
+        
+        // Play movement sound for forward/backward movement
+        if ((e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'KeyW' || e.code === 'KeyS') && 
+            playerMovingAudioRef.current && 
+            playerMovingAudioRef.current.paused) {
+          playerMovingAudioRef.current.play().catch(err => console.log("Audio play failed:", err));
+        }
       }
     };
 
     const handleKeyUp = (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
         setActiveKeys(prev => ({ ...prev, [e.code]: false }));
+        
+        // Map WASD to arrow keys for the player
+        if (e.code === 'KeyW') player.keyStates['ArrowUp'] = false;
+        if (e.code === 'KeyS') player.keyStates['ArrowDown'] = false;
+        if (e.code === 'KeyA') player.keyStates['ArrowLeft'] = false;
+        if (e.code === 'KeyD') player.keyStates['ArrowRight'] = false;
+        
+        // Stop movement sound if all forward/backward movement keys are released
+        if ((e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'KeyW' || e.code === 'KeyS') &&
+            !player.keyStates['ArrowUp'] && !player.keyStates['ArrowDown'] && 
+            playerMovingAudioRef.current && !playerMovingAudioRef.current.paused) {
+          playerMovingAudioRef.current.pause();
+        }
       }
     };
 
@@ -274,10 +304,14 @@ function App() {
     }
   };
   
-  // Check for movement to play sound
+  // Check for movement to play sound - include WASD keys
   useEffect(() => {
     if (appState === 'game' && playerRef.current) {
-      const isMoving = playerRef.current.keyStates['ArrowUp'] || playerRef.current.keyStates['ArrowDown'];
+      const isMoving = 
+        playerRef.current.keyStates['ArrowUp'] || 
+        playerRef.current.keyStates['ArrowDown'] || 
+        activeKeys['KeyW'] || 
+        activeKeys['KeyS'];
       
       if (isMoving && playerMovingAudioRef.current && playerMovingAudioRef.current.paused) {
         playerMovingAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
