@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './MazeMap.css';
 
-const MazeMap = ({ mazeConfig, onStartGame }) => {
+const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
   const canvasRef = useRef(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   
@@ -183,8 +183,19 @@ const MazeMap = ({ mazeConfig, onStartGame }) => {
   
   return (
     <div className="maze-map-container">
-      <h2>Maze Preview</h2>
-      <p>Remember your way from the blue start point to the red exit!</p>
+      <div className="maze-header">
+        <h2>Maze Preview</h2>
+        <p>Remember your way from the blue start point to the red exit!</p>
+        
+        {/* Back button */}
+        <button 
+          className="back-to-difficulty"
+          onClick={onBackClick}
+          aria-label="Back to difficulty selection"
+        >
+          ← Back to Difficulty
+        </button>
+      </div>
       
       <div className="canvas-container">
         {mazeConfig ? (
@@ -193,7 +204,6 @@ const MazeMap = ({ mazeConfig, onStartGame }) => {
           <div className="loading-message">Generating maze...</div>
         )}
       </div>
-      
       
       <div className="start-game-btn-container">
         <button 

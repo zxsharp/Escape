@@ -132,12 +132,39 @@ button:focus-visible {
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  background-color: #4CAF50;
-  color: rgb(255, 255, 255);
+  color: white;
+  transition: all 0.2s ease;
 }
 
 .popup-content button:hover {
-  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content button:active {
+  transform: translateY(0);
+}
+
+/* Button-specific colors */
+.popup-content button:nth-child(2) {
+  background-color: #F44336; /* Red for Retry */
+}
+.popup-content button:nth-child(2):hover {
+  background-color: #D32F2F;
+}
+
+.popup-content button:nth-child(3) {
+  background-color: #2196F3; /* Blue for Main Menu */
+}
+.popup-content button:nth-child(3):hover {
+  background-color: #1976D2;
+}
+
+.popup-content button:nth-child(4) {
+  background-color: #4CAF50; /* Green for Continue */
+}
+.popup-content button:nth-child(4):hover {
+  background-color: #388E3C;
 }
 
 .game-container {
@@ -228,6 +255,15 @@ button:focus-visible {
 .arrow-right {
   border-width: 15px 0 15px 20px;
   border-color: transparent transparent transparent white;
+}
+
+/* Back button */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  /* Using the existing control-btn class for styling consistency */
 }
 
 @media (max-width: 768px) {

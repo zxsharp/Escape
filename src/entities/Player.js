@@ -39,7 +39,8 @@ class Player {
         
         // Only check win condition if player hasn't won yet
         if (!this.hasWon && this.checkWinCondition(this.position)) {
-            return; // Win condition is now handled by React component
+            // This will be handled by the overridden checkWinCondition in App.jsx
+            return;
         }
 
         // Handle rotation with deltaTime

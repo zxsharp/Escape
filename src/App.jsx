@@ -180,14 +180,45 @@ function App() {
     }
   };
 
-  // Handler for retrying the game
+  // Handler for retrying the game - replace with reset position functionality
   const handleRetry = () => {
-    window.location.reload();
+    // Hide win popup
+    setShowWinPopup(false);
+    
+    // Reset player position to start position and reset win status
+    if (playerRef.current) {
+      // Reset position to start zone
+      playerRef.current.position.set(
+        currentMazeConfig.startZone.x,
+        playerRef.current.sceneYOffset,
+        currentMazeConfig.startZone.z
+      );
+      
+      // Reset rotation to default
+      playerRef.current.rotation = 0;
+      
+      // Reset win status
+      playerRef.current.hasWon = false;
+    }
   };
   
   // Handler for continuing after winning
   const handleContinue = () => {
     setShowWinPopup(false);
+  };
+  
+  // Handler for going back to difficulty selection
+  const handleBackToMain = () => {
+    // Reset game state
+    setAppState('difficulty');
+    setShowWinPopup(false);
+    setCurrentMazeConfig(null);
+    
+    // Cancel animation frame if it's running
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
   };
   
   // Render the appropriate view based on app state
@@ -201,6 +232,7 @@ function App() {
         <MazeMap 
           mazeConfig={currentMazeConfig} 
           onStartGame={handleStartGame}
+          onBackClick={handleBackToMain} // Add the back button handler
         />
       )}
       
@@ -208,12 +240,22 @@ function App() {
         <>
           <canvas ref={canvasRef} id="canvas" />
           
+          {/* Back to Main Menu Button */}
+          <button 
+            className="back-button control-btn"
+            onClick={handleBackToMain}
+            aria-label="Back to main menu"
+          >
+            <div className="arrow arrow-left"></div>
+          </button>
+          
           {/* Win Popup - React Component */}
           {showWinPopup && (
             <div className="win-popup" style={{ display: 'flex' }}>
               <div className="popup-content">
                 <h2>You Won!</h2>
                 <button onClick={handleRetry}>Retry</button>
+                <button onClick={handleBackToMain}>Main Menu</button>
                 <button onClick={handleContinue}>Continue</button>
               </div>
             </div>
