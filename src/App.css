@@ -266,6 +266,36 @@ button:focus-visible {
   /* Using the existing control-btn class for styling consistency */
 }
 
+/* Start position button */
+.start-position-button {
+  position: fixed;
+  top: 90px; /* Positioned below the back button */
+  left: 20px;
+  z-index: 100;
+}
+
+/* Icon for start position button */
+.start-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4040FF; /* Blue color to match the start position in the maze */
+  position: relative;
+}
+
+.start-icon:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+/* Adjust for smaller screens */
 @media (max-width: 768px) {
   .virtual-controls {
     opacity: 0.9;
@@ -274,6 +304,11 @@ button:focus-visible {
   .control-btn {
     width: 70px;
     height: 70px;
+  }
+  
+  /* Ensure proper spacing on mobile */
+  .start-position-button {
+    top: 100px;
   }
 }
 
