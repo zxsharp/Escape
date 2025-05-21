@@ -183,5 +183,4 @@ export function printMaze(maze, width, height) {
         output.push(bottomLine);
     }
     
-    console.log(output.join('\n'));
 }
