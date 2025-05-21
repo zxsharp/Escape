@@ -43,24 +43,31 @@ class Player {
             return;
         }
 
-        // Handle rotation with deltaTime
-        if (this.keyStates['ArrowLeft']) {
-            this.rotation += this.rotationSpeed * deltaTime;
-        }
-        if (this.keyStates['ArrowRight']) {
-            this.rotation -= this.rotationSpeed * deltaTime;
-        }
-
         // Move in the direction player is facing
         const forward = new THREE.Vector3(0, 0, -1);
         forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.rotation);
         
-        if (this.keyStates['ArrowDown']) {
+        // Forward/backward movement with both arrow keys and WASD
+        if (this.keyStates['ArrowDown'] || this.keyStates['KeyS']) {
             newPosition.add(forward.multiplyScalar(this.moveSpeed * deltaTime));
         }
-        if (this.keyStates['ArrowUp']) {
+        if (this.keyStates['ArrowUp'] || this.keyStates['KeyW']) {
             newPosition.add(forward.multiplyScalar(-this.moveSpeed * deltaTime));
-        } 
+        }
+        
+        // Lateral movement (strafing) for left/right keys
+        if (this.keyStates['ArrowRight'] || this.keyStates['KeyD']) {
+            // Calculate lateral movement vector (perpendicular to forward)
+            const right = new THREE.Vector3(-1, 0, 0);
+            right.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.rotation);
+            newPosition.add(right.multiplyScalar(this.moveSpeed * deltaTime));
+        }
+        if (this.keyStates['ArrowLeft'] || this.keyStates['KeyA']) {
+            // Calculate lateral movement vector (perpendicular to forward)
+            const right = new THREE.Vector3(1, 0, 0);
+            right.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.rotation);
+            newPosition.add(right.multiplyScalar(this.moveSpeed * deltaTime));
+        }
 
         if (!this.checkCollision(newPosition, walls)) {
             this.position.copy(newPosition);

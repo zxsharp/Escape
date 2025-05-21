@@ -10,6 +10,7 @@
   color: #C9D1D9; /* GitHub text color */
   overflow: auto;
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .maze-map-container h2 {
@@ -44,6 +45,7 @@
   max-height: 100%;
   max-width: 100%;
   display: block;
+  touch-action: pan-x pan-y;
 }
 
 .start-game-btn-container {
@@ -91,6 +93,14 @@
   width: 100%;
   margin-bottom: 1vh;
   padding-top: 1vh;
+}
+
+.maze-header h3 {
+  font-size: min(1.2rem, 4vw);
+  margin: 0.5vh 0 1vh;
+  color: #8B949E;
+  text-align: center;
+  padding: 0 20px;
 }
 
 .back-to-difficulty {
@@ -155,6 +165,9 @@
     transform: translateX(-50%);
     padding: 5px 10px;
     font-size: 0.9rem;
+    width: 80%;
+    max-width: 250px;
+    z-index: 10;
   }
   
   .back-to-difficulty:hover {
@@ -165,23 +178,104 @@
     transform: translateX(-50%) translateY(0);
   }
   
+  .maze-map-container h2 {
+    font-size: 1.5rem;
+    margin-top: 5px;
+  }
+  
+  .maze-header h3 {
+    font-size: 1rem;
+    margin: 0 0 10px;
+  }
+  
   .canvas-container {
     height: 60vh;
+    padding: 10px;
+  }
+  
+  .start-game-btn {
+    padding: 8px 20px;
+    font-size: 1.1rem;
+    width: 80%;
+    max-width: 250px;
+  }
+  
+  .credit-tag {
+    position: relative;
+    margin-top: 15px;
+    bottom: auto;
+    right: auto;
   }
 }
 
-@media (max-height: 600px) {
+@media (max-width: 320px) {
+  .maze-map-container h2 {
+    font-size: 1.2rem;
+  }
+  
+  .maze-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .back-to-difficulty {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+  
   .canvas-container {
-    height: 55vh;
+    height: 50vh;
+    padding: 8px;
+  }
+  
+  .start-game-btn {
+    font-size: 0.9rem;
+    padding: 6px 15px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .maze-header {
+    margin-top: 0;
   }
   
   .maze-map-container h2 {
-    font-size: 1.5rem;
-    margin: 0;
+    font-size: 1.2rem;
+    margin: 25px 0 0;
   }
   
-  .maze-map-container p {
+  .maze-header h3 {
     font-size: 0.9rem;
     margin: 0 0 5px;
+  }
+  
+  .back-to-difficulty {
+    top: 5px;
+    left: 5px;
+    transform: none;
+    padding: 3px 6px;
+    font-size: 0.8rem;
+    max-width: 150px;
+  }
+  
+  .back-to-difficulty:hover {
+    transform: translateY(-2px);
+  }
+  
+  .canvas-container {
+    height: 65vh;
+    padding: 5px;
+  }
+  
+  .start-game-btn-container {
+    margin-top: 5px;
+  }
+  
+  .start-game-btn {
+    font-size: 0.9rem;
+    padding: 5px 15px;
+  }
+  
+  .canvas-container {
+    margin-bottom: 5px;
   }
 }

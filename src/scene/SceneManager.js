@@ -4,7 +4,15 @@ export class SceneManager {
     constructor(canvas) {
         this.canvas = canvas;
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        // Detect if user is on mobile device
+        this.isMobile = window.innerWidth <= 768;
+        
+        // Adjust field of view based on device type
+        // Use wider FOV (90) on mobile for better visibility, 75 on desktop
+        const fov = this.isMobile ? 90 : 75;
+        
+        this.camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         
         // Define the vertical offset for the entire scene
@@ -41,6 +49,17 @@ export class SceneManager {
     }
 
     handleResize() {
+        // Update mobile status on resize
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth <= 768;
+        
+        // If switching between mobile and desktop, update the FOV
+        if (wasMobile !== this.isMobile) {
+            this.camera.fov = this.isMobile ? 90 : 75;
+            this.camera.updateProjectionMatrix();
+        }
+        
+        // Standard resize handling
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);

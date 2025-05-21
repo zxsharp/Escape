@@ -1,4 +1,3 @@
-import React from 'react';
 import GitHubLogo from './GitHubLogo';
 import './DifficultySelector.css';
 

@@ -11,6 +11,7 @@
   text-align: center;
   overflow-y: auto;
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .github-logo {
@@ -145,30 +146,127 @@
 @media (max-width: 600px) {
   .difficulty-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+    width: 100%;
+    max-width: 320px;
   }
   
   .difficulty-container {
-    padding-top: 2vh;
+    padding: 2vh 15px;
     justify-content: flex-start;
   }
   
-  .github-logo svg {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-@media (max-height: 700px) {
   .github-logo svg {
     width: 50px;
     height: 50px;
   }
   
   .logo-text {
-    font-size: min(2rem, 6vw);
+    font-size: 1.8rem;
+    margin-top: 0.2vh;
+  }
+  
+  .difficulty-container h2 {
+    font-size: 1.5rem;
+    margin: 0.5vh 0 1.5vh;
   }
   
   .difficulty-card {
+    padding: 15px;
+  }
+  
+  .difficulty-label {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+  }
+  
+  .maze-size {
+    font-size: 1.1rem;
+  }
+  
+  .maze-cells {
+    font-size: 0.9rem;
+  }
+  
+  .game-description {
+    font-size: 0.9rem;
+    padding: 0 5px;
+    margin: 15px 0;
+  }
+  
+  .credit-tag {
+    position: relative;
+    margin-top: 15px;
+    bottom: auto;
+    right: auto;
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 320px) {
+  .difficulty-card {
     padding: 10px;
+  }
+  
+  .difficulty-label {
+    font-size: 1.1rem;
+  }
+  
+  .maze-size {
+    font-size: 0.9rem;
+  }
+  
+  .maze-cells {
+    font-size: 0.8rem;
+  }
+}
+
+/* Fix for landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .difficulty-container {
+    padding: 1vh 10px;
+  }
+  
+  .difficulty-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 1vh;
+  }
+  
+  .github-logo svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+    margin-top: 0;
+  }
+  
+  .difficulty-container h2 {
+    font-size: 1.2rem;
+    margin: 0.5vh 0 1vh;
+  }
+  
+  .difficulty-card {
+    padding: 8px;
+  }
+  
+  .difficulty-label {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  
+  .maze-size {
+    font-size: 0.9rem;
+  }
+  
+  .maze-cells {
+    font-size: 0.8rem;
+  }
+  
+  .game-description {
+    font-size: 0.8rem;
+    margin: 5px 0;
   }
 }

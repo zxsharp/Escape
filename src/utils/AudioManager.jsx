@@ -23,11 +23,38 @@ const useAudioManager = () => {
     gameWonAudioRef.current = new Audio(gameWonSound);
     gameWonAudioRef.current.volume = 0.6;
     
+    // Reset audio state on page visibility change or window blur
+    const handleVisibilityChange = () => {
+      if (document.hidden && playerMovingAudioRef.current) {
+        playerMovingAudioRef.current.pause();
+      }
+    };
+    
+    const handleBlur = () => {
+      if (playerMovingAudioRef.current && !playerMovingAudioRef.current.paused) {
+        playerMovingAudioRef.current.pause();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    
     // Cleanup
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      
       if (playerMovingAudioRef.current) {
         playerMovingAudioRef.current.pause();
-        playerMovingAudioRef.current.currentTime = 0;
+        playerMovingAudioRef.current = null;
+      }
+      if (gameStartAudioRef.current) {
+        gameStartAudioRef.current.pause();
+        gameStartAudioRef.current = null;
+      }
+      if (gameWonAudioRef.current) {
+        gameWonAudioRef.current.pause();
+        gameWonAudioRef.current = null;
       }
     };
   }, []);
@@ -47,13 +74,13 @@ const useAudioManager = () => {
     }
     
     // Stop movement sound if it's playing
-    if (playerMovingAudioRef.current) {
+    if (playerMovingAudioRef.current && !playerMovingAudioRef.current.paused) {
       playerMovingAudioRef.current.pause();
     }
   };
   
   const stopAllSounds = () => {
-    if (playerMovingAudioRef.current) {
+    if (playerMovingAudioRef.current && !playerMovingAudioRef.current.paused) {
       playerMovingAudioRef.current.pause();
       playerMovingAudioRef.current.currentTime = 0;
     }

@@ -6,6 +6,8 @@ import VirtualControls from './VirtualControls.jsx';
 import WinPopup from './WinPopup.jsx';
 import MiniMap from './MiniMap.jsx';
 import ConfirmationPopup from './ConfirmationPopup.jsx';
+import InstructionPopup from './InstructionPopup.jsx';
+import usePlayerControls from '../hooks/usePlayerControls.js';
 
 const Game = ({ 
   mazeConfig, 
@@ -21,22 +23,25 @@ const Game = ({
   const [showWinPopup, setShowWinPopup] = useState(false);
   const [showMiniMap, setShowMiniMap] = useState(false);
   const [showMapConfirmation, setShowMapConfirmation] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [playerState, setPlayerState] = useState({
     position: null,
     rotation: 0
   });
   
-  // Track active keys for button highlighting
-  const [activeKeys, setActiveKeys] = useState({
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-    KeyW: false,
-    KeyS: false,
-    KeyA: false,
-    KeyD: false
+  // Mouse/touch rotation control variables
+  const mouseControlRef = useRef({
+    isMouseDown: false,
+    lastMouseX: 0,
+    MouseSensitivity: 0.003,
+    TouchSensitivity: 0.006,
+    isTouching: false,
+    lastTouchX: 0,
   });
+  
+  // Use the player controls hook for movement handling
+  const { activeKeys, handleVirtualButtonDown, handleVirtualButtonUp } = 
+    usePlayerControls(playerRef, audioRefs);
 
   // Win condition checker
   const checkWin = (position, winZone) => {
@@ -113,53 +118,6 @@ const Game = ({
     setShowWinPopup(false);
   };
   
-  // Handler for virtual button press/release
-  const handleVirtualButtonDown = (keyCode) => {
-    if (playerRef.current) {
-      playerRef.current.keyStates[keyCode] = true;
-      setActiveKeys(prev => ({ ...prev, [keyCode]: true }));
-      
-      // Play movement sound for Up/Down
-      if ((keyCode === 'ArrowUp' || keyCode === 'ArrowDown') && 
-          audioRefs.playerMovingAudio && 
-          audioRefs.playerMovingAudio.paused) {
-        audioRefs.playerMovingAudio.play().catch(e => console.log("Audio play failed:", e));
-      }
-    }
-  };
-  
-  const handleVirtualButtonUp = (keyCode) => {
-    if (playerRef.current) {
-      playerRef.current.keyStates[keyCode] = false;
-      setActiveKeys(prev => ({ ...prev, [keyCode]: false }));
-      
-      // Stop movement sound if both Up/Down are released
-      if ((keyCode === 'ArrowUp' || keyCode === 'ArrowDown') && 
-          playerRef.current.keyStates['ArrowUp'] === false && 
-          playerRef.current.keyStates['ArrowDown'] === false && 
-          audioRefs.playerMovingAudio) {
-        audioRefs.playerMovingAudio.pause();
-      }
-    }
-  };
-  
-  // Check for movement to play sound
-  useEffect(() => {
-    if (playerRef.current) {
-      const isMoving = 
-        playerRef.current.keyStates['ArrowUp'] || 
-        playerRef.current.keyStates['ArrowDown'] || 
-        activeKeys['KeyW'] || 
-        activeKeys['KeyS'];
-      
-      if (isMoving && audioRefs.playerMovingAudio && audioRefs.playerMovingAudio.paused) {
-        audioRefs.playerMovingAudio.play().catch(e => console.log("Audio play failed:", e));
-      } else if (!isMoving && audioRefs.playerMovingAudio && !audioRefs.playerMovingAudio.paused) {
-        audioRefs.playerMovingAudio.pause();
-      }
-    }
-  }, [activeKeys, audioRefs.playerMovingAudio]);
-  
   // Animation function to capture player position for minimap
   const animate = () => {
     animationFrameRef.current = requestAnimationFrame(animate);
@@ -208,60 +166,87 @@ const Game = ({
     // Create maze
     sceneManager.createWalls(mazeConfig);
 
-    // Set up keyboard event tracking for highlighting buttons
-    const handleKeyDown = (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
-        setActiveKeys(prev => ({ ...prev, [e.code]: true }));
-        
-        // Map WASD to arrow keys for the player
-        if (e.code === 'KeyW') player.keyStates['ArrowUp'] = true;
-        if (e.code === 'KeyS') player.keyStates['ArrowDown'] = true;
-        if (e.code === 'KeyA') player.keyStates['ArrowLeft'] = true;
-        if (e.code === 'KeyD') player.keyStates['ArrowRight'] = true;
-        
-        // Play movement sound for forward/backward movement
-        if ((e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'KeyW' || e.code === 'KeyS') && 
-            audioRefs.playerMovingAudio && 
-            audioRefs.playerMovingAudio.paused) {
-          audioRefs.playerMovingAudio.play().catch(err => console.log("Audio play failed:", err));
-        }
-      }
-    };
-
-    const handleKeyUp = (e) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
-        setActiveKeys(prev => ({ ...prev, [e.code]: false }));
-        
-        // Map WASD to arrow keys for the player
-        if (e.code === 'KeyW') player.keyStates['ArrowUp'] = false;
-        if (e.code === 'KeyS') player.keyStates['ArrowDown'] = false;
-        if (e.code === 'KeyA') player.keyStates['ArrowLeft'] = false;
-        if (e.code === 'KeyD') player.keyStates['ArrowRight'] = false;
-        
-        // Stop movement sound if all forward/backward movement keys are released
-        if ((e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'KeyW' || e.code === 'KeyS') &&
-            !player.keyStates['ArrowUp'] && !player.keyStates['ArrowDown'] && 
-            audioRefs.playerMovingAudio && !audioRefs.playerMovingAudio.paused) {
-          audioRefs.playerMovingAudio.pause();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    // Show instruction popup when maze is first loaded
+    setShowInstructions(true);
 
     // Handle window resizing
     const handleResize = () => sceneManager.handleResize();
     window.addEventListener('resize', handleResize);
+    
+    // Handle device orientation changes for mobile
+    const handleOrientationChange = () => {
+      // Wait for the resize event to complete
+      setTimeout(() => {
+        if (sceneManagerRef.current) {
+          sceneManagerRef.current.handleResize();
+        }
+      }, 300);
+    };
+    
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    // Set up mouse controls for camera rotation
+    const handleMouseDown = (e) => {
+      mouseControlRef.current.isMouseDown = true;
+      mouseControlRef.current.lastMouseX = e.clientX;
+      canvas.style.cursor = 'grabbing';
+    };
+    const handleMouseUp = () => {
+      mouseControlRef.current.isMouseDown = false;
+      canvas.style.cursor = 'default';
+    };
+    const handleMouseMove = (e) => {
+      if (mouseControlRef.current.isMouseDown && playerRef.current) {
+        const deltaX = e.clientX - mouseControlRef.current.lastMouseX;
+        mouseControlRef.current.lastMouseX = e.clientX;
+        playerRef.current.rotation += deltaX * mouseControlRef.current.MouseSensitivity;
+      }
+    };
+
+    // Touch controls for mobile
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        mouseControlRef.current.isTouching = true;
+        mouseControlRef.current.lastTouchX = e.touches[0].clientX;
+        canvas.style.cursor = 'grabbing';
+      }
+    };
+    const handleTouchEnd = () => {
+      mouseControlRef.current.isTouching = false;
+      canvas.style.cursor = 'default';
+    };
+    const handleTouchMove = (e) => {
+      if (mouseControlRef.current.isTouching && playerRef.current && e.touches.length === 1) {
+        const touchX = e.touches[0].clientX;
+        const deltaX = touchX - mouseControlRef.current.lastTouchX;
+        mouseControlRef.current.lastTouchX = touchX;
+        playerRef.current.rotation += deltaX * mouseControlRef.current.TouchSensitivity;
+      }
+    };
+
+    canvas.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // Add touch listeners for mobile
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     // Start the animation loop
     animate();
 
     // Cleanup function
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      // Remove touch listeners
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -287,11 +272,14 @@ const Game = ({
     <>
       <canvas ref={canvasRef} id="canvas" />
       
-      {/* Back to Main Menu Button */}
+      {/* Instruction Popup */}
+      {showInstructions && <InstructionPopup />}
+      
+      {/* Back Button */}
       <button 
         className="back-button control-btn"
         onClick={onBackToMain}
-        aria-label="Back to main menu"
+        aria-label="Back"
       >
         <div className="arrow arrow-left"></div>
       </button>
