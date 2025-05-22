@@ -10,7 +10,7 @@ export class SceneManager {
         
         // Adjust field of view based on device type
         // Use wider FOV (90) on mobile for better visibility, 75 on desktop
-        const fov = this.isMobile ? 90 : 75;
+        const fov = this.isMobile ? 120 : 90;
         
         this.camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
