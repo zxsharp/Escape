@@ -7,7 +7,7 @@ Escape is a 3D game where player can navigate through a maze to find the exit. Y
 
 ## Features
 - First-person 3D navigation
-- Random Maze generation for each turn ensures there is always a single unique path from start to end. ([text](https://en.wikipedia.org/wiki/Maze_generation_algorithm))
+- Random Maze generation for each turn ensures there is always a single unique path from start to end. ([Maze Generation Algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm))
 
 ## How to Play
 1. Use WASD or arrow keys to move through the maze
