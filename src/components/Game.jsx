@@ -8,6 +8,8 @@ import MiniMap from './MiniMap.jsx';
 import ConfirmationPopup from './ConfirmationPopup.jsx';
 import InstructionPopup from './InstructionPopup.jsx';
 import usePlayerControls from '../hooks/usePlayerControls.js';
+import KeyboardControls from './KeyboardControls.jsx';
+import { initAudio } from '../utils/audio';
 
 const Game = ({ 
   mazeConfig, 
@@ -142,6 +144,9 @@ const Game = ({
 
   // Initialize 3D game
   useEffect(() => {
+    // Initialize audio
+    initAudio();
+    
     // Initialize scene and player
     const canvas = canvasRef.current;
     // NEW: Ensure canvas is focusable and receives focus for key events
@@ -272,7 +277,10 @@ const Game = ({
   
   return (
     <>
-      <canvas ref={canvasRef} id="canvas" />
+      <canvas ref={canvasRef} id="canvas" tabIndex="0" />
+      
+      {/* Add keyboard controls component */}
+      <KeyboardControls playerRef={playerRef} />
       
       {/* Instruction Popup */}
       {showInstructions && <InstructionPopup />}
