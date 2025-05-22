@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+// Import audioContext to ensure we can resume it on key press
+import { audioContext } from '../utils/audio';
 
 const KeyboardControls = ({ playerRef }) => {
   useEffect(() => {
@@ -19,6 +21,11 @@ const KeyboardControls = ({ playerRef }) => {
       
       // Skip if not a movement key
       if (!Object.keys(keyMap).includes(e.code)) return;
+      
+      // IMPORTANT: Resume AudioContext before any audio playback
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().catch(err => console.log("Failed to resume AudioContext:", err));
+      }
       
       const direction = keyMap[e.code];
       
