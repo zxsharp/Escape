@@ -46,3 +46,10 @@ export function setupGlobalAudioHandlers() {
   
   console.log('Global audio handlers initialized');
 }
+
+// Simple initialization function that can be called from Game.jsx
+export function initAudio() {
+  // Just make sure we have an AudioContext ready
+  getAudioContext();
+  console.log('Audio system initialized');
+}
