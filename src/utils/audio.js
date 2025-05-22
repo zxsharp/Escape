@@ -1,19 +1,48 @@
-// Create and export AudioContext
-export const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+// We'll create the AudioContext lazily on first user interaction
+let _audioContext = null;
 
-// Create an audio element programmatically instead of relying on refs
-let movementAudio = null;
-
-// Initialize audio
-export function initAudio() {
-  // This function is simply to ensure the module is imported properly
-  console.log("Audio system initialized");
+// Get the AudioContext, creating it only when needed
+export function getAudioContext() {
+  if (!_audioContext) {
+    _audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _audioContext;
 }
 
-// Function to play movement sound
-export function playMovementSound() {
-  // Resume context if needed
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
+// Resume audio context - call this on EVERY user interaction
+export function ensureAudioResumed() {
+  const ctx = getAudioContext();
+  // Only try to resume if it's suspended
+  if (ctx.state === 'suspended') {
+    // Return the promise so callers can wait if needed
+    return ctx.resume().then(() => {
+      console.log('AudioContext successfully resumed');
+      return true;
+    }).catch(err => {
+      console.error('Failed to resume AudioContext:', err);
+      return false;
+    });
   }
+  return Promise.resolve(true); // Already running
+}
+
+// Add global event handlers for common user interactions
+export function setupGlobalAudioHandlers() {
+  const resumeAudio = () => {
+    ensureAudioResumed();
+  };
+  
+  // Add handlers to document to catch all user interactions
+  document.addEventListener('click', resumeAudio);
+  document.addEventListener('touchstart', resumeAudio);
+  document.addEventListener('keydown', resumeAudio);
+  
+  // Also try resuming on visibility change
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      resumeAudio();
+    }
+  });
+  
+  console.log('Global audio handlers initialized');
 }

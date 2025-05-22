@@ -8,7 +8,6 @@ import MiniMap from './MiniMap.jsx';
 import ConfirmationPopup from './ConfirmationPopup.jsx';
 import InstructionPopup from './InstructionPopup.jsx';
 import usePlayerControls from '../hooks/usePlayerControls.js';
-import KeyboardControls from './KeyboardControls.jsx';
 import { initAudio } from '../utils/audio';
 
 const Game = ({ 
@@ -278,9 +277,6 @@ const Game = ({
   return (
     <>
       <canvas ref={canvasRef} id="canvas" tabIndex="0" />
-      
-      {/* Add keyboard controls component */}
-      <KeyboardControls playerRef={playerRef} />
       
       {/* Instruction Popup */}
       {showInstructions && <InstructionPopup />}

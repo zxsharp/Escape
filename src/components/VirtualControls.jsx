@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ensureAudioResumed } from '../utils/audio';
 
 const VirtualControls = ({ activeKeys, onButtonDown, onButtonUp }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -17,8 +18,88 @@ const VirtualControls = ({ activeKeys, onButtonDown, onButtonUp }) => {
     };
   }, []);
 
+  // KEYBOARD CONTROLS - handle them directly here
+  useEffect(() => {
+    const handleKeyDown = async (e) => {
+      const keyMap = {
+        'ArrowUp': 'KeyW',
+        'ArrowDown': 'KeyS',
+        'ArrowLeft': 'KeyA',
+        'ArrowRight': 'KeyD'
+      };
+      
+      // Normalize key codes (map arrow keys to WASD internally)
+      const keyCode = keyMap[e.code] || e.code;
+      
+      // Skip if not a movement key
+      if (!['KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(keyCode)) return;
+      
+      // Resume audio context first - CRITICAL 
+      await ensureAudioResumed();
+      
+      // Trigger the same handler as button clicks
+      onButtonDown(keyCode);
+      
+      // Find and highlight the corresponding button
+      const dirMap = {
+        'KeyW': 'up',
+        'KeyS': 'down',
+        'KeyA': 'left',
+        'KeyD': 'right'
+      };
+      
+      const dir = dirMap[keyCode];
+      const btn = document.querySelector(`.${dir}-btn.control-btn`);
+      if (btn) {
+        btn.classList.add('active');
+      }
+    };
+    
+    const handleKeyUp = (e) => {
+      const keyMap = {
+        'ArrowUp': 'KeyW',
+        'ArrowDown': 'KeyS',
+        'ArrowLeft': 'KeyA',
+        'ArrowRight': 'KeyD'
+      };
+      
+      // Normalize key codes (map arrow keys to WASD internally)
+      const keyCode = keyMap[e.code] || e.code;
+      
+      // Skip if not a movement key
+      if (!['KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(keyCode)) return;
+      
+      // Trigger button up handler
+      onButtonUp(keyCode);
+      
+      // Find and remove highlight from button
+      const dirMap = {
+        'KeyW': 'up',
+        'KeyS': 'down',
+        'KeyA': 'left',
+        'KeyD': 'right'
+      };
+      
+      const dir = dirMap[keyCode];
+      const btn = document.querySelector(`.${dir}-btn.control-btn`);
+      if (btn) {
+        btn.classList.remove('active');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [onButtonDown, onButtonUp]);
+
   // Handle button press and release
-  const handleTouchStart = (key) => {
+  const handleTouchStart = async (key) => {
+    // Resume audio context first - CRITICAL
+    await ensureAudioResumed();
     onButtonDown(key);
   };
 
