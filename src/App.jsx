@@ -4,6 +4,7 @@ import MazeMap from './components/MazeMap.jsx';
 import DifficultySelector from './components/DifficultySelector.jsx';
 import Game from './components/Game.jsx';
 import useAudioManager from './utils/AudioManager.jsx';
+import { Analytics } from "@vercel/analytics/react"
 import './App.css';
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
           audioRefs={audioRefs}
         />
       )}
+      <Analytics />
     </>
   );
 }
