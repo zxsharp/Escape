@@ -20,7 +20,7 @@ const Controls = () => {
       }
       playMovementSound();
 
-      const btn = document.querySelector(`.arrow-button.${dir}`);
+      const btn = document.querySelector(`.${dir}-btn.control-btn`);
       if (btn) {
         btn.classList.add('active');
         setTimeout(() => btn.classList.remove('active'), 100);
