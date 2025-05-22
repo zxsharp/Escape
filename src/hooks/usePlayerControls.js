@@ -59,62 +59,53 @@ const usePlayerControls = (playerRef, audioRefs) => {
     
     const player = playerRef.current;
     
-    // Keyboard down event handler
     const handleKeyDown = (e) => {
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
         setActiveKeys(prev => ({ ...prev, [e.code]: true }));
-        
-        // Set the key state directly in the player object
         player.keyStates[e.code] = true;
-
-        // Update visual controls based on WASD to Arrow key mapping
+        
         const keyMapping = {
           'KeyW': 'ArrowUp',
           'KeyS': 'ArrowDown',
           'KeyA': 'ArrowLeft',
           'KeyD': 'ArrowRight'
         };
-        
-        // If it's a WASD key, also activate the corresponding arrow key visual
         if (keyMapping[e.code]) {
           setActiveKeys(prev => ({ ...prev, [keyMapping[e.code]]: true }));
         }
+        
+        // NEW: Resume movement sound on keyboard gesture
+        if (audioRefs.playerMovingAudio && audioRefs.playerMovingAudio.paused) {
+          audioRefs.playerMovingAudio.play().catch(err => console.log("Audio play failed (keydown):", err));
+        }
       }
     };
-
-    // Keyboard up event handler
+    
     const handleKeyUp = (e) => {
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
         setActiveKeys(prev => ({ ...prev, [e.code]: false }));
-        
-        // Set the key state directly in the player object
         player.keyStates[e.code] = false;
-      }
-
-      // Update visual controls based on WASD to Arrow key mapping
+        
         const keyMapping = {
           'KeyW': 'ArrowUp',
           'KeyS': 'ArrowDown',
           'KeyA': 'ArrowLeft',
           'KeyD': 'ArrowRight'
         };
-        
-        // If it's a WASD key, also deactivate the corresponding arrow key visual
         if (keyMapping[e.code]) {
           setActiveKeys(prev => ({ ...prev, [keyMapping[e.code]]: false }));
         }
+      }
     };
 
-    // Add event listeners
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     
-    // Cleanup
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [playerRef]);
+  }, [playerRef, audioRefs]);
 
   // Update movement sound whenever key states change
   useEffect(() => {

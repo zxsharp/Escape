@@ -144,31 +144,34 @@ const Game = ({
   useEffect(() => {
     // Initialize scene and player
     const canvas = canvasRef.current;
+    // NEW: Ensure canvas is focusable and receives focus for key events
+    if (canvas) {
+      canvas.tabIndex = 0;
+      canvas.focus();
+    }
     const sceneManager = new SceneManager(canvas);
     const player = new Player(mazeConfig);
     
-    // Modify player to use our React win handler
+    // Modify player win handler
     player.checkWinCondition = (position) => {
       if (player.hasWon) return false;
-      
       if (checkWin(position, mazeConfig.winZone)) {
         player.hasWon = true;
         handleWin();
         return true;
       }
-      
       return false;
     };
     
     sceneManagerRef.current = sceneManager;
     playerRef.current = player;
-
+    
     // Create maze
     sceneManager.createWalls(mazeConfig);
-
+    
     // Show instruction popup when maze is first loaded
     setShowInstructions(true);
-
+    
     // Handle window resizing
     const handleResize = () => sceneManager.handleResize();
     window.addEventListener('resize', handleResize);
@@ -243,7 +246,6 @@ const Game = ({
       canvas.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mousemove', handleMouseMove);
-      // Remove touch listeners
       canvas.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('touchmove', handleTouchMove);
