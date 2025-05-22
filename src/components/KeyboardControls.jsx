@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-// Import audioContext to ensure we can resume it on key press
 import { audioContext } from '../utils/audio';
 
 const KeyboardControls = ({ playerRef }) => {
@@ -11,7 +10,19 @@ const KeyboardControls = ({ playerRef }) => {
       up: null, down: null, left: null, right: null
     };
     
-    const handleKeyDown = (e) => {
+    // Make sure we force resume audio context on first key press
+    const resumeAudioContext = async () => {
+      if (audioContext && audioContext.state === 'suspended') {
+        try {
+          await audioContext.resume();
+          console.log("AudioContext resumed via keyboard!");
+        } catch (err) {
+          console.error("Failed to resume AudioContext:", err);
+        }
+      }
+    };
+    
+    const handleKeyDown = async (e) => {
       const keyMap = {
         'ArrowUp': 'up', 'KeyW': 'up',
         'ArrowDown': 'down', 'KeyS': 'down',
@@ -22,10 +33,8 @@ const KeyboardControls = ({ playerRef }) => {
       // Skip if not a movement key
       if (!Object.keys(keyMap).includes(e.code)) return;
       
-      // IMPORTANT: Resume AudioContext before any audio playback
-      if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume().catch(err => console.log("Failed to resume AudioContext:", err));
-      }
+      // CRITICAL: Always try to resume audio context first
+      await resumeAudioContext();
       
       const direction = keyMap[e.code];
       
@@ -34,15 +43,27 @@ const KeyboardControls = ({ playerRef }) => {
       
       // Find the corresponding button (if not already cached)
       if (!buttonElements[direction]) {
+        // First try with the format used in VirtualControls
         buttonElements[direction] = document.querySelector(`.${direction}-btn.control-btn`);
       }
       
       const button = buttonElements[direction];
       if (button) {
+        // Aggressively ensure the audio context is resumed
+        resumeAudioContext();
+        
         // Add active class which creates the glow effect - stays until key up
         button.classList.add('active');
         
-        // Trigger button down to reuse its audio logic
+        // CRUCIAL: Create a real DOM click event that mimics the user clicking
+        // This is a complete user gesture that browsers recognize for audio playback
+        button.dispatchEvent(new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        }));
+        
+        // Also directly trigger the mousedown for the specific behavior
         button.dispatchEvent(new MouseEvent('mousedown', {
           bubbles: true,
           cancelable: true,
@@ -51,6 +72,7 @@ const KeyboardControls = ({ playerRef }) => {
       }
     };
     
+    // Same handler for key up
     const handleKeyUp = (e) => {
       const keyMap = {
         'ArrowUp': 'up', 'KeyW': 'up',
