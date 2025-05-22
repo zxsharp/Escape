@@ -83,28 +83,28 @@ const VirtualControls = ({ activeKeys, onButtonDown, onButtonUp }) => {
     <div className="virtual-controls">
       <button 
         className={`up-btn control-btn ${activeKeys.ArrowUp || activeKeys.KeyW ? 'active' : ''}`} 
-        {...createTouchHandlers(activeKeys.ArrowUp ? 'ArrowUp' : 'KeyW')}
+        {...createTouchHandlers('KeyW')}
         aria-label="Move forward"
       >
         <div className="arrow arrow-up"></div>
       </button>
       <button 
         className={`down-btn control-btn ${activeKeys.ArrowDown || activeKeys.KeyS ? 'active' : ''}`} 
-        {...createTouchHandlers(activeKeys.ArrowDown ? 'ArrowDown' : 'KeyS')}
+        {...createTouchHandlers('KeyS')}
         aria-label="Move backward"
       >
         <div className="arrow arrow-down"></div>
       </button>
       <button 
         className={`left-btn control-btn ${activeKeys.ArrowLeft || activeKeys.KeyA ? 'active' : ''}`} 
-        {...createTouchHandlers(activeKeys.ArrowLeft ? 'ArrowLeft' : 'KeyA')}
+        {...createTouchHandlers('KeyA')}
         aria-label="Move left"
       >
         <div className="arrow arrow-left"></div>
       </button>
       <button 
         className={`right-btn control-btn ${activeKeys.ArrowRight || activeKeys.KeyD ? 'active' : ''}`} 
-        {...createTouchHandlers(activeKeys.ArrowRight ? 'ArrowRight' : 'KeyD')}
+        {...createTouchHandlers('KeyD')}
         aria-label="Move right"
       >
         <div className="arrow arrow-right"></div>
