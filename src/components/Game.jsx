@@ -114,7 +114,7 @@ const Game = ({
   };
   
   // Handler for continuing after winning
-  const handleContinue = () => {
+  const handleFreeRoam = () => {
     setShowWinPopup(false);
   };
   
@@ -329,7 +329,7 @@ const Game = ({
         <WinPopup 
           onRetry={handleRetry}
           onMainMenu={onBackToMain}
-          onContinue={handleContinue}
+          onFreeRoam={handleFreeRoam}
         />
       )}
       

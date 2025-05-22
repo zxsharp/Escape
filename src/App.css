@@ -161,7 +161,7 @@ button:focus-visible {
 }
 
 .popup-content button:nth-child(4) {
-  background-color: #4CAF50; /* Green for Continue */
+  background-color: #4CAF50; /* Green for Free Roam */
 }
 .popup-content button:nth-child(4):hover {
   background-color: #388E3C;

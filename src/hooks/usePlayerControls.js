@@ -66,6 +66,19 @@ const usePlayerControls = (playerRef, audioRefs) => {
         
         // Set the key state directly in the player object
         player.keyStates[e.code] = true;
+
+        // Update visual controls based on WASD to Arrow key mapping
+        const keyMapping = {
+          'KeyW': 'ArrowUp',
+          'KeyS': 'ArrowDown',
+          'KeyA': 'ArrowLeft',
+          'KeyD': 'ArrowRight'
+        };
+        
+        // If it's a WASD key, also activate the corresponding arrow key visual
+        if (keyMapping[e.code]) {
+          setActiveKeys(prev => ({ ...prev, [keyMapping[e.code]]: true }));
+        }
       }
     };
 
@@ -77,6 +90,19 @@ const usePlayerControls = (playerRef, audioRefs) => {
         // Set the key state directly in the player object
         player.keyStates[e.code] = false;
       }
+
+      // Update visual controls based on WASD to Arrow key mapping
+        const keyMapping = {
+          'KeyW': 'ArrowUp',
+          'KeyS': 'ArrowDown',
+          'KeyA': 'ArrowLeft',
+          'KeyD': 'ArrowRight'
+        };
+        
+        // If it's a WASD key, also deactivate the corresponding arrow key visual
+        if (keyMapping[e.code]) {
+          setActiveKeys(prev => ({ ...prev, [keyMapping[e.code]]: false }));
+        }
     };
 
     // Add event listeners

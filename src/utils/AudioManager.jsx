@@ -13,15 +13,15 @@ const useAudioManager = () => {
     // Player movement sound (looping)
     playerMovingAudioRef.current = new Audio(playerMovingSound);
     playerMovingAudioRef.current.loop = true;
-    playerMovingAudioRef.current.volume = 0.4;
+    playerMovingAudioRef.current.volume = 1;
     
     // Game start sound (once)
     gameStartAudioRef.current = new Audio(gameStartSound);
-    gameStartAudioRef.current.volume = 0.6;
+    gameStartAudioRef.current.volume = 0.8;
     
     // Game won sound (once)
     gameWonAudioRef.current = new Audio(gameWonSound);
-    gameWonAudioRef.current.volume = 0.6;
+    gameWonAudioRef.current.volume = 0.8;
     
     // Reset audio state on page visibility change or window blur
     const handleVisibilityChange = () => {
