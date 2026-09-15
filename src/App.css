@@ -648,3 +648,342 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ==========================================================================
+   Multiplayer & Next.js New UI Styles
+   ========================================================================== */
+
+/* Hero Home View */
+.home-hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0d1117;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.hero-title-card .game-title {
+  font-size: 3.6rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.hero-title-card .game-tagline {
+  color: #8b949e;
+  font-size: 1.15rem;
+  margin-bottom: 2.5rem;
+}
+
+.main-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 3rem;
+}
+
+.hero-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.hero-action-btn:hover {
+  border-color: #58a6ff;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(88, 166, 255, 0.2);
+}
+
+.hero-action-btn .btn-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.hero-action-btn .btn-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.hero-action-btn .btn-desc {
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+
+/* Modal View */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  color: white;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.modal-btn-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.primary-btn {
+  background: #238636;
+  color: white;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #2ea043;
+}
+
+.secondary-btn {
+  background: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+}
+
+/* Room Lobby */
+.lobby-container {
+  min-height: 100vh;
+  background: #0d1117;
+  color: white;
+  padding: 2rem;
+}
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.room-code-badge {
+  background: #161b22;
+  border: 1px solid #30363d;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.lobby-section {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.player-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.roster-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #0d1117;
+  border-radius: 8px;
+  border: 1px solid #21262d;
+}
+
+.host-badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  background: #d29922;
+  color: black;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.difficulty-card {
+  padding: 1rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.difficulty-card.active {
+  border-color: #58a6ff;
+  background: #1f6feb22;
+}
+
+.start-race-btn {
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: #238636;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.start-race-btn:hover {
+  background: #2ea043;
+}
+
+/* Countdown Overlay */
+.countdown-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 17, 23, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.countdown-box {
+  text-align: center;
+  color: white;
+}
+
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #58a6ff;
+  animation: pulse 1s infinite;
+}
+
+/* Player Status HUD */
+.player-status-hud {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 260px;
+  background: rgba(22, 27, 34, 0.85);
+  border: 1px solid #30363d;
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  z-index: 1000;
+  color: white;
+}
+
+.hud-header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #8b949e;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.hud-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.hud-player-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 0.3rem 0;
+}
+
+.hud-player-card.is-self {
+  font-weight: 700;
+  color: #58a6ff;
+}
+
+/* Universal Timer */
+.game-hud-top {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.game-timer-badge {
+  background: rgba(22, 27, 34, 0.9);
+  border: 2px solid #58a6ff;
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: monospace;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.leave-game-btn {
+  background: rgba(218, 54, 51, 0.8);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
