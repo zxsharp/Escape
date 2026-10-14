@@ -55,8 +55,21 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('room_players', roomPlayers);
   });
 
-  // Host starts the race
-  socket.on('start_race', ({ seed, difficulty }) => {
+    // Host prepares the race & shows maze preview to all players
+  socket.on('prepare_race', ({ seed, difficulty }) => {
+    if (!currentRoom || !rooms.has(currentRoom)) return;
+
+    const generatedSeed = seed || `seed_${Math.random().toString(36).substring(2, 8)}`;
+    const selectedDifficulty = difficulty || 'intermediate';
+
+    io.to(currentRoom).emit('maze_preview', {
+      seed: generatedSeed,
+      difficulty: selectedDifficulty
+    });
+  });
+
+  // Host triggers the 3-2-1 countdown after reviewing the map
+  socket.on('start_race', (data) => {
     if (!currentRoom || !rooms.has(currentRoom)) return;
 
     const roomPlayers = rooms.get(currentRoom);
@@ -65,14 +78,33 @@ io.on('connection', (socket) => {
       p.finishTimeMs = null;
     });
 
-    const generatedSeed = seed || `seed_${Math.random().toString(36).substring(2, 8)}`;
-
-    io.to(currentRoom).emit('game_start', {
-      seed: generatedSeed,
-      difficulty: difficulty || 'intermediate',
-      startTime: Date.now() + 3000 // 3-second countdown offset
+    io.to(currentRoom).emit('countdown_start', {
+      startTime: Date.now() + 3000
     });
 
+    // Also emit game_start for backward compatibility if needed
+    if (data && data.seed) {
+      io.to(currentRoom).emit('game_start', {
+        seed: data.seed,
+        difficulty: data.difficulty || 'intermediate',
+        startTime: Date.now() + 3000
+      });
+    }
+
+    io.to(currentRoom).emit('room_players', roomPlayers);
+  });
+
+  // Return all players in room to lobby
+  socket.on('back_to_lobby', () => {
+    if (!currentRoom || !rooms.has(currentRoom)) return;
+
+    const roomPlayers = rooms.get(currentRoom);
+    roomPlayers.forEach(p => {
+      p.status = 'joined';
+      p.finishTimeMs = null;
+    });
+
+    io.to(currentRoom).emit('back_to_lobby');
     io.to(currentRoom).emit('room_players', roomPlayers);
   });
 

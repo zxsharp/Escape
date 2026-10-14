@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { generateMaze } from './utils/mazeGenerator.js';
 import { socketService } from './services/socketService.js';
 import DifficultySelector from './components/DifficultySelector.jsx';
@@ -12,11 +12,11 @@ import useAudioManager from './utils/AudioManager.jsx';
 import './App.css';
 
 export default function App() {
-  // Navigation State: 'home' | 'solo_difficulty' | 'solo_preview' | 'solo_game' | 'lobby' | 'countdown' | 'multiplayer_game'
+  // Navigation State: 'home' | 'solo_difficulty' | 'solo_preview' | 'solo_game' | 'lobby' | 'multiplayer_preview' | 'countdown' | 'multiplayer_game'
   const [appState, setAppState] = useState('home');
 
   // Solo State
-  const [soloDifficulty, setSoloDifficulty] = useState(null);
+  const [_soloDifficulty, setSoloDifficulty] = useState(null);
   const [soloMazeConfig, setSoloMazeConfig] = useState(null);
   const [soloStartTime, setSoloStartTime] = useState(null);
   const [soloFinishTime, setSoloFinishTime] = useState(null);
@@ -36,6 +36,9 @@ export default function App() {
   });
   const [isHost, setIsHost] = useState(false);
   const [players, setPlayers] = useState([]);
+  const playersRef = useRef(players);
+  playersRef.current = players;
+
   const [selectedDifficulty, setSelectedDifficulty] = useState('intermediate');
   const [multiMazeConfig, setMultiMazeConfig] = useState(null);
   const [raceStartTime, setRaceStartTime] = useState(null);
@@ -98,7 +101,10 @@ export default function App() {
   const handleJoinSubmit = (e) => {
     e.preventDefault();
     if (joinCodeInput.trim()) {
-      const formatted = joinCodeInput.trim().toUpperCase();
+      let formatted = joinCodeInput.trim().toUpperCase().replace(/\s+/g, '');
+      if (!formatted.startsWith('ESC-') && formatted.length === 4) {
+        formatted = `ESC-${formatted}`;
+      }
       setRoomCode(formatted);
       setIsHost(false);
       setShowJoinModal(false);
@@ -107,76 +113,112 @@ export default function App() {
   };
 
   const handleNameSubmit = (name) => {
-    setPlayerName(name);
-    localStorage.setItem('escape_player_name', name);
+    const clean = name.trim();
+    if (clean) {
+      setPlayerName(clean);
+      localStorage.setItem('escape_player_name', clean);
+    }
   };
 
-  // Connect to Socket.io when in lobby or active multiplayer state
-  useEffect(() => {
-    if (!roomCode || !playerName || (appState !== 'lobby' && appState !== 'countdown' && appState !== 'multiplayer_game')) {
-      return;
-    }
+  // Helper to trigger synchronized 3-2-1 countdown
+  const triggerCountdown = () => {
+    setAppState('countdown');
+    let count = 3;
+    setCountdownNum(3);
 
-    socketService.joinRoom(roomCode, playerName, playerId, isHost, {
+    const countdownInterval = setInterval(() => {
+      count -= 1;
+      if (count > 0) {
+        setCountdownNum(count);
+      } else {
+        clearInterval(countdownInterval);
+        setRaceStartTime(Date.now());
+        setAppState('multiplayer_game');
+        playStartSound();
+      }
+    }, 1000);
+  };
+
+  // Helper to generate multiplayer maze from seed & difficulty
+  const buildMultiplayerMaze = (seed, difficulty) => {
+    const presets = {
+      easy: { width: 10, height: 10 },
+      intermediate: { width: 15, height: 10 },
+      hard: { width: 20, height: 15 },
+      extreme: { width: 35, height: 20 }
+    };
+    const preset = presets[difficulty] || presets.intermediate;
+    const maze = generateMaze(preset.width, preset.height, 2, seed);
+
+    setMultiMazeConfig({
+      width: preset.width,
+      height: preset.height,
+      cellSize: 2,
+      ...maze
+    });
+    setSelectedDifficulty(difficulty);
+    setWinnerName(null);
+    setMultiFinishTime(null);
+  };
+
+  // Keep socket callbacks fresh
+  useEffect(() => {
+    socketService.setCallbacks({
       onRoomPlayers: (updatedPlayers) => {
         setPlayers(updatedPlayers);
         const self = updatedPlayers.find(p => p.id === playerId);
         if (self && self.isHost) setIsHost(true);
       },
+      onMazePreview: ({ seed, difficulty }) => {
+        buildMultiplayerMaze(seed, difficulty);
+        setAppState('multiplayer_preview');
+      },
+      onCountdownStart: () => {
+        triggerCountdown();
+      },
       onGameStart: ({ seed, difficulty }) => {
-        const presets = {
-          easy: { width: 10, height: 10 },
-          intermediate: { width: 15, height: 10 },
-          hard: { width: 20, height: 15 },
-          extreme: { width: 35, height: 20 }
-        };
-        const preset = presets[difficulty] || presets.intermediate;
-        const maze = generateMaze(preset.width, preset.height, 2, seed);
-
-        setMultiMazeConfig({
-          width: preset.width,
-          height: preset.height,
-          cellSize: 2,
-          ...maze
-        });
-        setSelectedDifficulty(difficulty);
+        // Fallback for direct game start if triggered
+        buildMultiplayerMaze(seed, difficulty);
+        triggerCountdown();
+      },
+      onBackToLobby: () => {
+        setAppState('lobby');
+        setMultiMazeConfig(null);
         setWinnerName(null);
         setMultiFinishTime(null);
-
-        // 3-2-1 Synchronized Countdown
-        setAppState('countdown');
-        let count = 3;
-        setCountdownNum(3);
-
-        const countdownInterval = setInterval(() => {
-          count -= 1;
-          if (count > 0) {
-            setCountdownNum(count);
-          } else {
-            clearInterval(countdownInterval);
-            setRaceStartTime(Date.now());
-            setAppState('multiplayer_game');
-            playStartSound();
-          }
-        }, 1000);
       },
-      onPlayerWon: ({ playerId: winnerId, finishTimeMs: timeMs }) => {
-        const winner = players.find(p => p.id === winnerId);
+      onPlayerWon: ({ playerId: winnerId }) => {
+        const winner = playersRef.current.find(p => p.id === winnerId);
         if (winner) {
           setWinnerName(winner.name);
         }
       }
     });
+  });
 
-    return () => {
-      // Clean up on unmount
-    };
-  }, [roomCode, playerName, playerId, isHost, appState, players]);
+  // Connect to Socket.io when entering multiplayer
+  useEffect(() => {
+    if (!roomCode || !playerName || appState === 'home') {
+      return;
+    }
 
-  // Host starts multiplayer race
+    socketService.joinRoom(roomCode, playerName, playerId, isHost);
+  }, [roomCode, playerName, playerId, isHost, appState]);
+
+  // Host prepares race (broadcasts 2D preview to all players)
   const handleHostStartRace = () => {
     const seed = `seed_${Math.random().toString(36).substring(2, 8)}`;
-    socketService.startRace(seed, selectedDifficulty);
+    socketService.prepareRace(seed, selectedDifficulty);
+  };
+
+  // Host clicks "Ready" on 2D preview (triggers countdown for everyone)
+  const handleHostReady = () => {
+    socketService.startRace();
+  };
+
+  // Host returns everyone from preview to lobby
+  const handleHostBackToLobby = () => {
+    socketService.backToLobby();
   };
 
   // Player escapes maze in multiplayer
@@ -187,9 +229,21 @@ export default function App() {
     socketService.broadcastWin(elapsed);
   };
 
+  // Return to lobby from game win
+  const handleReturnToLobby = () => {
+    if (isHost) {
+      socketService.backToLobby();
+    } else {
+      setAppState('lobby');
+      setMultiMazeConfig(null);
+      setWinnerName(null);
+      setMultiFinishTime(null);
+    }
+  };
+
   // Navigation: Back to main menu
   const handleBackToMain = () => {
-    if (appState === 'lobby' || appState === 'countdown' || appState === 'multiplayer_game') {
+    if (appState === 'lobby' || appState === 'multiplayer_preview' || appState === 'countdown' || appState === 'multiplayer_game') {
       socketService.leaveRoom();
     }
     stopAllSounds();
@@ -293,9 +347,6 @@ export default function App() {
       {appState === 'solo_game' && soloMazeConfig && (
         <>
           <div className="game-hud-top">
-            <button className="leave-game-btn" onClick={handleBackToMain}>
-              ← Main Menu
-            </button>
             <UniversalClock 
               startTime={soloStartTime} 
               isRunning={!soloFinishTime} 
@@ -329,7 +380,19 @@ export default function App() {
         />
       )}
 
-      {/* 6. SYNCHRONIZED COUNTDOWN OVERLAY */}
+      {/* 6. MULTIPLAYER 2D MAP PREVIEW */}
+      {appState === 'multiplayer_preview' && multiMazeConfig && (
+        <MazeMap
+          mazeConfig={multiMazeConfig}
+          isMultiplayer={true}
+          isHost={isHost}
+          onStartGame={handleHostReady}
+          onBackClick={isHost ? handleHostBackToLobby : handleBackToMain}
+          backButtonText={isHost ? '← Back to Lobby' : '← Leave Room'}
+        />
+      )}
+
+      {/* 7. SYNCHRONIZED COUNTDOWN OVERLAY */}
       {appState === 'countdown' && (
         <div className="countdown-overlay">
           <div className="countdown-box">
@@ -340,13 +403,10 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. MULTIPLAYER GAMEPLAY */}
+      {/* 8. MULTIPLAYER GAMEPLAY */}
       {appState === 'multiplayer_game' && multiMazeConfig && (
         <>
           <div className="game-hud-top">
-            <button className="leave-game-btn" onClick={handleBackToMain}>
-              ← Leave Race
-            </button>
             <UniversalClock 
               startTime={raceStartTime} 
               isRunning={!multiFinishTime} 
@@ -359,6 +419,7 @@ export default function App() {
           <Game
             mazeConfig={multiMazeConfig}
             onBackToMain={handleBackToMain}
+            onReturnToLobby={handleReturnToLobby}
             onGameWin={handleMultiplayerWin}
             audioRefs={audioRefs}
             finishTimeMs={multiFinishTime}

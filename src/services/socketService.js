@@ -11,7 +11,10 @@ class SocketService {
     this.socket = null;
     this.callbacks = {
       onRoomPlayers: () => {},
+      onMazePreview: () => {},
+      onCountdownStart: () => {},
       onGameStart: () => {},
+      onBackToLobby: () => {},
       onPlayerWon: () => {},
       onConnect: () => {},
       onDisconnect: () => {}
@@ -39,8 +42,20 @@ class SocketService {
         if (this.callbacks.onRoomPlayers) this.callbacks.onRoomPlayers(players);
       });
 
+      this.socket.on('maze_preview', (data) => {
+        if (this.callbacks.onMazePreview) this.callbacks.onMazePreview(data);
+      });
+
+      this.socket.on('countdown_start', (data) => {
+        if (this.callbacks.onCountdownStart) this.callbacks.onCountdownStart(data);
+      });
+
       this.socket.on('game_start', (data) => {
         if (this.callbacks.onGameStart) this.callbacks.onGameStart(data);
+      });
+
+      this.socket.on('back_to_lobby', () => {
+        if (this.callbacks.onBackToLobby) this.callbacks.onBackToLobby();
       });
 
       this.socket.on('player_won', (data) => {
@@ -48,6 +63,10 @@ class SocketService {
       });
     }
     return this.socket;
+  }
+
+  setCallbacks(callbacks = {}) {
+    this.callbacks = { ...this.callbacks, ...callbacks };
   }
 
   joinRoom(roomCode, playerName, playerId, isHost, callbacks = {}) {
@@ -62,9 +81,21 @@ class SocketService {
     });
   }
 
+  prepareRace(seed, difficulty) {
+    if (this.socket) {
+      this.socket.emit('prepare_race', { seed, difficulty });
+    }
+  }
+
   startRace(seed, difficulty) {
     if (this.socket) {
       this.socket.emit('start_race', { seed, difficulty });
+    }
+  }
+
+  backToLobby() {
+    if (this.socket) {
+      this.socket.emit('back_to_lobby');
     }
   }
 

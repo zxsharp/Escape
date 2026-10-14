@@ -279,3 +279,29 @@
     margin-bottom: 5px;
   }
 }
+
+.waiting-host-notice {
+  background: rgba(22, 27, 34, 0.9);
+  border: 2px solid #58a6ff;
+  border-radius: 30px;
+  padding: 10px 24px;
+  color: #c9d1d9;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  animation: pulseNotice 2s infinite ease-in-out;
+}
+
+@keyframes pulseNotice {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(88, 166, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(88, 166, 255, 0.4);
+  }
+}

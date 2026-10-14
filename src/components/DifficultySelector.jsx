@@ -16,18 +16,6 @@ const DifficultySelector = ({ onDifficultySelect, onBack }) => {
         <button 
           className="back-btn-top" 
           onClick={onBack}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            background: 'rgba(0,0,0,0.4)',
-            color: '#fff',
-            cursor: 'pointer',
-            fontWeight: '600'
-          }}
         >
           ← Main Menu
         </button>

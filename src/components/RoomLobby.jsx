@@ -15,11 +15,39 @@ export default function RoomLobby({
   const [nameInput, setNameInput] = useState(playerName || '');
   const [copied, setCopied] = useState(false);
 
-  const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyCode = async (e) => {
+    if (e) e.stopPropagation();
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(roomCode);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = roomCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = roomCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackErr) {
+        console.warn('Failed to copy room code:', fallbackErr);
+      }
+    }
   };
 
   if (!playerName) {
@@ -56,9 +84,11 @@ export default function RoomLobby({
   return (
     <div className="lobby-container">
       <div className="lobby-header">
-        <div className="room-code-badge" onClick={handleCopyLink}>
+        <div className="room-code-badge" onClick={handleCopyCode} title="Click to copy room code">
           <span>ROOM CODE: <strong>{roomCode}</strong></span>
-          <button className="copy-btn">{copied ? '✅ Copied Link!' : '📋 Copy Link'}</button>
+          <button className="copy-btn" onClick={handleCopyCode} type="button">
+            {copied ? '✅ Copied Code!' : '📋 Copy Code'}
+          </button>
         </div>
         <button className="secondary-btn leave-btn" onClick={onLeaveRoom}>
           Leave Room

@@ -1,6 +1,14 @@
 import React from 'react';
 
-const WinPopup = ({ onRetry, onMainMenu, onFreeRoam, finishTimeMs, isMultiplayer = false, winnerName }) => {
+const WinPopup = ({ 
+  onRetry, 
+  onMainMenu, 
+  onFreeRoam, 
+  onReturnToLobby,
+  finishTimeMs, 
+  isMultiplayer = false, 
+  winnerName 
+}) => {
   const formatTime = (totalMs) => {
     if (!totalMs) return null;
     const minutes = Math.floor(totalMs / 60000);
@@ -27,8 +35,16 @@ const WinPopup = ({ onRetry, onMainMenu, onFreeRoam, finishTimeMs, isMultiplayer
           </p>
         )}
         <div className="popup-buttons">
-          <button className="primary-btn" onClick={onRetry}>Play Again</button>
-          <button className="secondary-btn" onClick={onMainMenu}>Main Menu</button>
+          {isMultiplayer ? (
+            <button className="primary-btn" onClick={onReturnToLobby || onMainMenu}>
+              Return to Lobby
+            </button>
+          ) : (
+            <button className="primary-btn" onClick={onRetry}>Play Again</button>
+          )}
+          <button className="secondary-btn" onClick={onMainMenu}>
+            {isMultiplayer ? 'Leave to Menu' : 'Main Menu'}
+          </button>
           <button className="free-roam-btn" onClick={onFreeRoam}>Free Roam</button>
         </div>
       </div>

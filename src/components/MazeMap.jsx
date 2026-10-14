@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import './MazeMap.css';
 
-const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
+const MazeMap = ({ 
+  mazeConfig, 
+  onStartGame, 
+  onBackClick,
+  backButtonText = '← Back to Difficulty',
+  isMultiplayer = false,
+  isHost = true,
+  startGameText = 'Start Game',
+  waitingText = 'Waiting for host to start countdown...'
+}) => {
   const canvasRef = useRef(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   
@@ -184,17 +193,23 @@ const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
   return (
     <div className="maze-map-container">
       <div className="maze-header">
-        <h2>Maze Preview</h2>
-        <h3>Remember your way from the blue start point to the red exit!</h3>
+        <h2>{isMultiplayer ? 'Multiplayer Maze Preview' : 'Maze Preview'}</h2>
+        <h3>
+          {isMultiplayer
+            ? 'All players see this exact maze! Remember your route from blue start to red exit.'
+            : 'Remember your way from the blue start point to the red exit!'}
+        </h3>
         
         {/* Back button */}
-        <button 
-          className="back-to-difficulty"
-          onClick={onBackClick}
-          aria-label="Back to difficulty selection"
-        >
-          ← Back to Difficulty
-        </button>
+        {onBackClick && (
+          <button 
+            className="back-to-difficulty"
+            onClick={onBackClick}
+            aria-label={backButtonText}
+          >
+            {backButtonText}
+          </button>
+        )}
       </div>
       
       <div className="canvas-container">
@@ -206,13 +221,19 @@ const MazeMap = ({ mazeConfig, onStartGame, onBackClick }) => {
       </div>
       
       <div className="start-game-btn-container">
-        <button 
-          className="start-game-btn" 
-          onClick={onStartGame}
-          disabled={!mazeConfig}
-        >
-          {mazeConfig ? 'Start Game' : 'Generating Maze...'}
-        </button>
+        {isMultiplayer && !isHost ? (
+          <div className="waiting-host-notice">
+            <span className="spinner-icon">⏱️</span> {waitingText}
+          </div>
+        ) : (
+          <button 
+            className="start-game-btn" 
+            onClick={onStartGame}
+            disabled={!mazeConfig}
+          >
+            {!mazeConfig ? 'Generating Maze...' : isMultiplayer ? 'Ready to Race 🏁' : startGameText}
+          </button>
+        )}
       </div>
       
       {/* Credit tag */}

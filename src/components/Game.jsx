@@ -14,6 +14,7 @@ import { initAudio } from '../utils/audio';
 const Game = ({ 
   mazeConfig, 
   onBackToMain, 
+  onReturnToLobby,
   onGameWin,
   audioRefs,
   finishTimeMs = null,
@@ -360,7 +361,8 @@ const Game = ({
       <button 
         className="back-button control-btn"
         onClick={onBackToMain}
-        aria-label="Back"
+        title={isMultiplayer ? "Leave Race" : "Back to Main Menu"}
+        aria-label={isMultiplayer ? "Leave Race" : "Back to Main Menu"}
       >
         <div className="arrow arrow-left"></div>
       </button>
@@ -410,6 +412,7 @@ const Game = ({
         <WinPopup 
           onRetry={handleRetry}
           onMainMenu={onBackToMain}
+          onReturnToLobby={onReturnToLobby}
           onFreeRoam={handleFreeRoam}
           finishTimeMs={finishTimeMs}
           isMultiplayer={isMultiplayer}
