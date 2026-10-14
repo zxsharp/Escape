@@ -1,34 +1,78 @@
 # Escape - Multiplayer 3D Web Maze Game
 
+## [Play Now: escapeit.vercel.app](https://escapeit.vercel.app)
+
 An interactive, first-person 3D maze game and multiplayer speed-running race built with **React**, **Three.js**, **WebSockets (Socket.io)**, and **JavaScript**.
 
 ---
 
-## 🚀 Features
+## Overview
 
-- **Solo Mode**: Procedurally generates solvable mazes at runtime across 4 difficulty tiers (*Easy*, *Intermediate*, *Hard*, *Extreme*) with a live stopwatch clock.
-- **Multiplayer Race Mode**: Real-time room lobbies with custom codes (e.g., `ESC-8A2F`). Host triggers a synchronized 3-2-1 countdown before the race begins.
-- **Deterministic Seeded DFS Generation**: Both players share a short seed string over WebSockets, generating the **exact same 3D maze** locally in milliseconds without transmitting heavy 3D geometry over the wire.
-- **Live Opponent HUD & Race Leaderboard**: Displays real-time status (`In Maze` vs. `🏆 00:34.25`) as opponents reach the exit.
-- **First-Person 3D Controls**: Decoupled 2D-to-3D coordinate projection with mouse/touch look, keyboard WASD, and virtual mobile controls.
+Escape is a 3D game where players navigate through a maze to find the exit. Before entering the maze, you are shown a 2D map to study your path, and then you must find your way through the winding corridors in a first-person 3D world to escape!
+
+You can play solo to challenge your speed across multiple difficulties or create multiplayer rooms to race head-to-head with friends in real-time.
+
+---
+
+## Features
+
+- **Solo Mode**: Procedurally generated solvable mazes across 4 difficulty tiers (*Easy*, *Intermediate*, *Hard*, *Extreme*) with a live stopwatch timer.
+- **Multiplayer Race Mode**: Real-time room lobbies with custom room codes (e.g., `ESC-8A2F`).
+- **Synchronized 2D Maze Preview**: In multiplayer, all players in the room preview the exact same maze map to study the route before the host initiates the synchronized countdown.
+- **Deterministic Seeded Maze Generation**: Ensures a unique, guaranteed-solvable maze with a single path from start to exit for every race. ([Maze Generation Algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm))
+- **Live Opponent HUD**: Real-time player status tracking during multiplayer races showing who is still in the maze and finish times for players who have escaped.
+- **First-Person 3D Navigation**: First-person camera with mouse/touch look, keyboard movement (WASD / arrows), and virtual on-screen controls for mobile.
 - **Cheat Map & Mini-Map**: Optional top-down 2D minimap showing current position and orientation.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## How to Play
 
-| Component | Technology | Role |
-| :--- | :--- | :--- |
-| **Frontend UI** | React 19 + Vite | State machine, room lobby, HUD overlay, stopwatch clock, victory popup |
-| **3D Engine** | Three.js | First-person camera, scene lighting, floor & wall box mesh rendering |
-| **Maze Algorithm** | Randomized Depth-First Search (DFS) | Generates perfect, single-solution solvable mazes with winding corridors |
-| **Multiplayer / Networking** | Node.js + Socket.io / WebSockets | Room creation, player roster presence, synchronized countdown, and win time broadcast |
-| **Physics / Collision** | 2D Spatial Grid AABB ($O(1)$) | High-performance collision detection against immediate neighboring grid cells |
-| **Audio** | Web Audio API | Directional movement, countdown, and victory sound effects |
+1. **Study the Map**: Check the 2D maze preview to memorize the path from the blue start point to the red exit.
+2. **Navigate the Maze**: Use WASD, arrow keys, or mobile touch controls to explore the corridors.
+3. **Reach the Exit**: Avoid dead ends, find the red exit zone, and escape in the fastest time possible!
 
 ---
 
-## 🏃 Running Locally
+## Screenshots
+
+### Difficulty Levels
+![Difficulty levels](./src/assets/difficulty.png)
+
+### Maze Preview
+![Maze Preview](./src/assets/preview.png)
+
+### Maze Entrance
+![Maze Entrance](./src/assets/game_shot1.png)
+
+### Cheat Map
+![Cheat Map](./src/assets/cheat_map.png)
+
+### Maze Exit
+![Maze Exit](./src/assets/game_shot2.png)
+
+---
+
+## Controls
+
+- **W / ↑**: Move Forward
+- **S / ↓**: Move Backward
+- **A / ←**: Strafe Left
+- **D / →**: Strafe Right
+- **Mouse Drag / Touch**: Look & Rotate Camera View
+
+---
+
+## Technologies Used
+
+- **React 19 & Vite**: UI layout, state machine, room lobby, and HUD overlays
+- **Three.js**: First-person 3D rendering, maze geometry, lighting, and camera physics
+- **Socket.io**: Real-time multiplayer room matchmaking, seed synchronization, and race timings
+- **Web Audio API**: Immersive directional movement, race countdown, and victory audio
+
+---
+
+## Running Locally
 
 ### 1. Install Dependencies
 ```bash
@@ -49,28 +93,10 @@ Runs the lightweight Socket.io room server on port `3001`.
 
 ---
 
-## 🧠 Interview Defense & Architecture Highlights
+## Development
 
-### 1. Why Depth-First Search (DFS) for Maze Generation?
-- DFS uses recursive backtracking with a stack to explore as deep as possible before backtracking.
-- This creates **long, winding corridors with high branching factor and deep dead ends**, providing a fun, challenging first-person exploration experience.
-- It generates a "perfect maze" (spanning tree) ensuring **exactly one unique solution path** from start to exit with zero loops.
+I made this game as a project to explore 3D rendering and real-time multiplayer on browsers.
 
-### 2. How Does Multiplayer Synchronization Work?
-- Instead of serializing 200+ wall mesh coordinates over WebSockets, the host generates a random 8-character **seed** (`seed_9x7a2`).
-- Both clients use a deterministic **Mulberry32 PRNG** with that seed to run the DFS algorithm locally.
-- Both machines construct the identical maze layout in under 5ms with near-zero network bandwidth (< 50 bytes per race).
+## Feedback and Contributions
 
-### 3. How Are 2D Grids Mapped to 3D Three.js Coordinates?
-- Game logic and player collision are tracked entirely in 2D coordinates $(X, Z)$.
-- Three.js is treated as a pure visual view layer: every frame, the camera position is updated to $(X, \text{eye\_height}, Z)$ and oriented with $\sin(\theta) / \cos(\theta)$.
-- Collision checking is optimized from $O(N)$ to $O(1)$ by converting world coordinates to grid cell indices and testing only the walls in the player's immediate 3x3 neighborhood.
-
----
-
-## 🎮 Controls
-- **W / ↑**: Move Forward
-- **S / ↓**: Move Backward
-- **A / ←**: Strafe Left
-- **D / →**: Strafe Right
-- **Mouse Drag / Touch**: Look & Rotate View
+Feel free to provide feedback or contribute to the project by submitting issues or pull requests on our GitHub repository.
